@@ -1,0 +1,145 @@
+# Convenção (skill android-version-catalog): aliases em kebab-case derivados do artifactId,
+# versões com o nome mais curto sem ambiguidade, convention plugins como `convention-*`.
+
+[versions]
+# --- Projeto ---
+android-compile-sdk = "36"
+android-min-sdk = "26"
+android-target-sdk = "36"
+
+# --- Build tooling ---
+agp = "9.3.0"
+kotlin = "2.3.21"
+
+# --- UI ---
+compose-multiplatform = "1.11.1"
+compose-material3 = "1.11.0-alpha07"
+androidx-lifecycle = "2.11.0-beta01"
+androidx-navigation3 = "1.1.1"
+androidx-activity = "1.13.0"
+androidx-core-splashscreen = "1.0.1"
+
+# --- Dados ---
+ktor = "3.5.2"
+kotlinx-serialization = "1.9.0"
+kotlinx-coroutines = "1.10.2"
+androidx-datastore = "1.2.1"
+
+# --- DI ---
+koin = "4.2.2"
+
+# --- Testes ---
+turbine = "1.2.0"
+assertk = "0.28.1"
+konsist = "0.17.3"
+androidx-compose-ui-test = "1.11.2"   # a versão do Jetpack Compose que o CMP 1.11.1 resolve no Android
+androidx-test-runner = "1.7.0"
+androidx-test-espresso = "3.7.0"      # o ui-test-junit4 traz a 3.5.0, que quebra no Android 14+ (InputManager.getInstance)
+
+# --- Lint ---
+spotless = "8.10.2"
+ktlint = "1.8.0"
+compose-rules = "0.6.6"               # io.nlopez.compose.rules:ktlint
+
+[libraries]
+# --- Gradle plugins usados pelo build-logic ---
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+kotlin-serialization-gradle-plugin = { module = "org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+compose-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
+
+# --- Compose (KMP) ---
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }     # voltar do sistema
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }     # androidRuntimeClasspath
+
+# --- Lifecycle / Navigation 3 (KMP, JetBrains) ---
+androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
+androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "androidx-navigation3" }
+
+# --- Android-only (apenas :androidApp) ---
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
+
+# --- KotlinX ---
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+# --- Rede ---
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }     # androidMain
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }     # iosMain
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+
+# --- Preferências (KMP) ---
+androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
+
+# --- DI ---
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }               # :androidApp
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+
+# --- Testes ---
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
+konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }     # :konsist
+
+# --- Testes instrumentados (androidDeviceTest) ---
+compose-ui-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "compose-multiplatform" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-ui-test" }     # ComponentActivity do teste
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
+
+[bundles]
+ktor = [
+    "ktor-client-core",
+    "ktor-client-auth",
+    "ktor-client-content-negotiation",
+    "ktor-client-logging",
+    "ktor-serialization-kotlinx-json",
+]
+koin-compose = [
+    "koin-core",
+    "koin-compose",
+    "koin-compose-viewmodel",
+]
+testing = [
+    "kotlin-test",
+    "kotlinx-coroutines-test",
+    "turbine",
+    "assertk",
+]
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }     # :konsist
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+
+# Convention plugins (build-logic) — versão sempre "unspecified"
+convention-kmp-library = { id = "app.kmp.library", version = "unspecified" }
+convention-kmp-data = { id = "app.kmp.data", version = "unspecified" }
+convention-cmp-library = { id = "app.cmp.library", version = "unspecified" }
+convention-cmp-feature = { id = "app.cmp.feature", version = "unspecified" }
+convention-device-test = { id = "app.device.test", version = "unspecified" }

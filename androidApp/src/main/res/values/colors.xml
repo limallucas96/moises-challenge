@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Placeholder do esqueleto: trocar pela cor da marca. -->
+    <color name="splash_background">#FFF5F5F3</color>
+    <color name="ic_launcher_background">#FF7B5CFF</color>
+</resources>
