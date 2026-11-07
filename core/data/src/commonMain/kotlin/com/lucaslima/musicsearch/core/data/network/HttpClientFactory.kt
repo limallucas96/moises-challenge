@@ -35,7 +35,11 @@ object HttpClientFactory {
         config: NetworkConfig,
         tokenProvider: AuthTokenProvider,
     ): HttpClient = HttpClient(engine) {
-        install(ContentNegotiation) { json(appJson) }
+        install(ContentNegotiation) {
+            json(appJson)
+            // Algumas APIs (a do iTunes, por exemplo) devolvem JSON como text/javascript.
+            json(appJson, contentType = ContentType.Text.JavaScript)
+        }
 
         if (config.enableLogging) {
             install(Logging) { level = LogLevel.INFO }
