@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.lucaslima.musicsearch.feature.library.data.fakes.FakeAudioPlayer
 import com.lucaslima.musicsearch.feature.library.data.fakes.FakeClock
@@ -89,5 +90,16 @@ class MediaPlayerControllerTest {
         controller.toggleRepeat()
 
         assertThat(controller.state.value.repeatMode).isEqualTo(RepeatMode.ONE)
+    }
+
+    @Test
+    fun erro_do_player_chega_ao_estado() = runTest(UnconfinedTestDispatcher()) {
+        val controller = controller()
+        controller.play(listOf(song(1)), startIndex = 0)
+
+        audioPlayer.fail()
+
+        assertThat(controller.state.value.hasError).isTrue()
+        assertThat(controller.state.value.isPlaying).isFalse()
     }
 }

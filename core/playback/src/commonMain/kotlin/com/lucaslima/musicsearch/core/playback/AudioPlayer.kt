@@ -29,6 +29,7 @@ interface AudioPlayer {
 
 data class PlaybackState(
     val current: PlayableItem? = null,
+    /** Tocando ou prestes a tocar (carregando depois do play). */
     val isPlaying: Boolean = false,
     val isBuffering: Boolean = false,
     val position: Duration = Duration.ZERO,
@@ -36,6 +37,8 @@ data class PlaybackState(
     val hasNext: Boolean = false,
     val hasPrevious: Boolean = false,
     val repeatMode: RepeatMode = RepeatMode.OFF,
+    /** A música atual não carregou (rede, formato). Some quando outra começa. */
+    val hasError: Boolean = false,
 )
 
 enum class RepeatMode { OFF, ONE, ALL }

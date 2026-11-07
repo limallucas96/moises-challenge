@@ -1,6 +1,7 @@
 package com.lucaslima.musicsearch.di
 
 import com.lucaslima.musicsearch.core.data.di.coreDataModule
+import com.lucaslima.musicsearch.core.playback.di.platformPlaybackModule
 import com.lucaslima.musicsearch.feature.library.data.di.libraryDataModule
 import com.lucaslima.musicsearch.feature.library.presentation.di.libraryPresentationModule
 import org.koin.core.context.startKoin
@@ -13,6 +14,7 @@ private const val API_BASE_URL = "https://itunes.apple.com/"
 
 fun appModules(): List<Module> = listOf(
     coreDataModule(API_BASE_URL),
+    platformPlaybackModule,
     libraryDataModule,
     libraryPresentationModule,
 )

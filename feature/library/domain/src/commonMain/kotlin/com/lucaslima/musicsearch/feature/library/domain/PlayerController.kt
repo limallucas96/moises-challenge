@@ -36,6 +36,8 @@ data class PlayerState(
     val hasNext: Boolean = false,
     val hasPrevious: Boolean = false,
     val repeatMode: RepeatMode = RepeatMode.OFF,
+    /** A música atual não carregou; a tela avisa e deixa tentar de novo pelo play. */
+    val hasError: Boolean = false,
 )
 
 enum class RepeatMode { OFF, ONE, ALL }

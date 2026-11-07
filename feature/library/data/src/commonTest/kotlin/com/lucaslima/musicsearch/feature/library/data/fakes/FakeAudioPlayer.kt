@@ -45,6 +45,9 @@ internal class FakeAudioPlayer : AudioPlayer {
         it.copy(repeatMode = RepeatMode.entries[(it.repeatMode.ordinal + 1) % RepeatMode.entries.size])
     }
 
+    /** Simula a música atual falhando ao carregar. */
+    fun fail() = _state.update { it.copy(isPlaying = false, hasError = true) }
+
     private fun publish(isPlaying: Boolean) = _state.update {
         it.copy(
             current = queue.getOrNull(index),

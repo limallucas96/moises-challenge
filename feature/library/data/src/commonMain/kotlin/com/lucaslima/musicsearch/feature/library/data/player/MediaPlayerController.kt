@@ -104,4 +104,5 @@ private fun PlaybackState.toPlayerState(queue: Map<String, Song>): PlayerState =
         PlaybackRepeatMode.ONE -> RepeatMode.ONE
         PlaybackRepeatMode.ALL -> RepeatMode.ALL
     },
+    hasError = hasError,
 )
