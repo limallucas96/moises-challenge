@@ -7,5 +7,8 @@
         <item name="postSplashScreenTheme">@style/Theme.App</item>
     </style>
 
-    <style name="Theme.App" parent="@android:style/Theme.Material.Light.NoActionBar" />
+    <!-- O app é só escuro: a janela por trás do Compose também. -->
+    <style name="Theme.App" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
 </resources>

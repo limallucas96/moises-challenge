@@ -1,4 +1,4 @@
-rootProject.name = "cmpskeleton"
+rootProject.name = "musicsearch"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -32,6 +32,7 @@ dependencyResolutionManagement {
 
 // --- Entry points e composição ---------------------------------------------
 include(":androidApp")
+include(":wearApp")
 include(":shared")
 
 // --- Core ------------------------------------------------------------------
@@ -40,15 +41,13 @@ include(":core:data")
 include(":core:presentation")
 include(":core:designsystem")
 include(":core:testing")
+include(":core:playback")
 
 // --- Features (domain / data / presentation) -------------------------------
-// Duas features de exemplo, só para exercitar módulos, DI e navegação.
-include(":feature:alpha:domain")
-include(":feature:alpha:data")
-include(":feature:alpha:presentation")
-
-// Só presentation: não tem dados próprios.
-include(":feature:beta:presentation")
+// Library: busca, recentes, player e álbum (as telas "Library - *" do Figma).
+include(":feature:library:domain")
+include(":feature:library:data")
+include(":feature:library:presentation")
 
 // --- Testes de arquitetura -------------------------------------------------
 include(":konsist")

@@ -9,7 +9,7 @@ android-target-sdk = "36"
 
 # --- Build tooling ---
 agp = "9.3.0"
-kotlin = "2.3.21"
+kotlin = "2.4.21"
 
 # --- UI ---
 compose-multiplatform = "1.11.1"
@@ -18,12 +18,21 @@ androidx-lifecycle = "2.11.0-beta01"
 androidx-navigation3 = "1.1.1"
 androidx-activity = "1.13.0"
 androidx-core-splashscreen = "1.0.1"
+androidx-wear-compose = "1.6.2"          # só :wearApp; 1.7+ exige compileSdk 37
 
 # --- Dados ---
 ktor = "3.5.2"
 kotlinx-serialization = "1.9.0"
 kotlinx-coroutines = "1.10.2"
 androidx-datastore = "1.2.1"
+androidx-room = "2.8.5"
+androidx-sqlite = "2.7.1"
+androidx-paging = "3.5.3"
+coil = "3.5.0"                         # 3.6+ puxa Compose 1.12, que exige compileSdk 37
+ksp = "2.3.13"
+
+# --- Player (Android) ---
+androidx-media3 = "1.11.1"
 
 # --- DI ---
 koin = "4.2.2"
@@ -67,6 +76,9 @@ androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigat
 
 # --- Android-only (apenas :androidApp) ---
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-wear-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "androidx-wear-compose" }        # :wearApp
+androidx-wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "androidx-wear-compose" }      # :wearApp
+androidx-wear-compose-navigation3 = { module = "androidx.wear.compose:compose-navigation3", version.ref = "androidx-wear-compose" }    # :wearApp
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
 
 # --- KotlinX ---
@@ -87,6 +99,23 @@ ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 # --- Preferências (KMP) ---
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
+
+# --- Banco local e paginação (KMP) ---
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "androidx-room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }     # KSP
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidx-sqlite" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "androidx-paging" }
+
+# --- Imagens (KMP) ---
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+
+# --- Player (Android-only: androidMain do :core:playback) ---
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "androidx-media3" }
+androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "androidx-media3" }
 
 # --- DI ---
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -136,6 +165,8 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }     # :konsist
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
 
 # Convention plugins (build-logic) — versão sempre "unspecified"
 convention-kmp-library = { id = "app.kmp.library", version = "unspecified" }
@@ -143,3 +174,4 @@ convention-kmp-data = { id = "app.kmp.data", version = "unspecified" }
 convention-cmp-library = { id = "app.cmp.library", version = "unspecified" }
 convention-cmp-feature = { id = "app.cmp.feature", version = "unspecified" }
 convention-device-test = { id = "app.device.test", version = "unspecified" }
+convention-module-rules = { id = "app.module.rules", version = "unspecified" }

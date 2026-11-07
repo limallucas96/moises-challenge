@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Music Search</string>
+    <string name="menu_title">Music</string>
+    <string name="now_playing">Now playing</string>
+    <string name="nothing_playing">Nothing playing</string>
+    <string name="songs">Songs</string>
+    <string name="albums">Albums</string>
+    <string name="search">Search</string>
+    <string name="search_prompt">Song or artist</string>
+    <string name="clear_search">Clear search</string>
+    <string name="recently_played">Recently played</string>
+    <string name="recents_empty">Songs you play show up here</string>
+    <string name="results">Results</string>
+    <string name="no_results">No results</string>
+    <string name="search_error">Couldn\'t search. Check the connection.</string>
+    <string name="retry">Retry</string>
+    <string name="loading">Loading</string>
+    <string name="albums_empty">Albums of songs you play show up here</string>
+    <string name="album_error">Couldn\'t load the album</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="repeat_off">Repeat off</string>
+    <string name="repeat_all">Repeat all</string>
+    <string name="repeat_one">Repeat one</string>
+    <string name="playing">Playing</string>
+</resources>

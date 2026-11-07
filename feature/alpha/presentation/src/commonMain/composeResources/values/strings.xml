@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="alpha_title">Alpha</string>
-    <string name="alpha_loading">Loading…</string>
-    <string name="alpha_refresh">Refresh</string>
-    <string name="alpha_open_beta">Open Beta</string>
-    <string name="alpha_beta_message">Sent from Alpha: %1$s</string>
-</resources>

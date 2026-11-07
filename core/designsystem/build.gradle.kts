@@ -3,5 +3,5 @@ plugins {
 }
 
 compose.resources {
-    packageOfResClass = "cmp.skeleton.app.core.designsystem.resources"
+    packageOfResClass = "com.lucaslima.musicsearch.core.designsystem.resources"
 }

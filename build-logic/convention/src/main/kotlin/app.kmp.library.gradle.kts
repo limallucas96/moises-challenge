@@ -14,8 +14,8 @@ plugins {
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-// :feature:auth:data -> cmp.skeleton.app.feature.auth.data
-val moduleNamespace = "cmp.skeleton.app." + path.removePrefix(":").replace(":", ".").replace("-", "")
+// :feature:auth:data -> com.lucaslima.musicsearch.feature.auth.data
+val moduleNamespace = "com.lucaslima.musicsearch." + path.removePrefix(":").replace(":", ".").replace("-", "")
 
 kotlin {
     iosArm64()

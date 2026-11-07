@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="songs_title">Songs</string>
+    <string name="search_placeholder">Search</string>
+    <string name="search_open">Search songs</string>
+    <string name="search_clear">Clear search</string>
+    <string name="recently_played">Recently played</string>
+    <string name="recents_empty_title">Find your next favorite song</string>
+    <string name="recents_empty_body">Search by song, artist or album. The songs you play show up here.</string>
+    <string name="search_no_results_title">No results for “%1$s”</string>
+    <string name="search_no_results_body">Check the spelling or try another search.</string>
+    <string name="search_offline_banner">Couldn’t update. Showing saved results.</string>
+    <string name="retry">Try again</string>
+    <string name="song_more_options">More options for %1$s</string>
+    <string name="song_play">Play</string>
+    <string name="song_no_preview">Preview unavailable</string>
+    <string name="song_now_playing">Now playing</string>
+    <string name="view_album">View album</string>
+    <string name="loading">Loading</string>
+    <string name="back">Back</string>
+    <string name="now_playing_title">Now playing</string>
+    <string name="now_playing_more_options">More options</string>
+    <string name="now_playing_empty_title">Nothing playing</string>
+    <string name="now_playing_empty_body">Pick a song to start listening.</string>
+    <string name="now_playing_error">Couldn’t play this song. Check your connection and tap play to try again.</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="next">Next song</string>
+    <string name="previous">Previous song</string>
+    <string name="repeat_off">Repeat off</string>
+    <string name="repeat_all">Repeat all</string>
+    <string name="repeat_one">Repeat one</string>
+    <string name="playback_position">Playback position</string>
+    <string name="playback_position_state">%1$s of %2$s</string>
+    <string name="album_title_fallback">Album</string>
+</resources>

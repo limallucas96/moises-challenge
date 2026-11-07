@@ -46,8 +46,12 @@ fun moduleRuleViolation(
         "core" -> {
             val allowed = when (layer) {
                 "domain" -> setOf("domain", "testing")
-                "data" -> setOf("domain", "data", "testing")
+
+                // data adapta a porta do player (:core:playback) para o modelo da feature.
+                "data" -> setOf("domain", "data", "playback", "testing")
+
                 "presentation" -> setOf("domain", "presentation", "designsystem", "testing")
+
                 else -> return null
             }
             if (target.getOrNull(1) in allowed) null else "$layer não depende de :core:${target.getOrNull(1)}"

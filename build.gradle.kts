@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.androidx.room) apply false
     alias(libs.plugins.spotless)
 }
 
@@ -30,7 +32,7 @@ spotless {
             suppressLintsFor {
                 step = "ktlint"
                 shortCode = "compose:compositionlocal-allowlist"
-                path = "core/designsystem/src/commonMain/kotlin/cmp/skeleton/app/core/designsystem/theme/$file"
+                path = "core/designsystem/src/commonMain/kotlin/com/lucaslima/musicsearch/core/designsystem/theme/$file"
             }
         }
     }

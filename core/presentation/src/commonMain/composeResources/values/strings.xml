@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="error_no_internet">Sem conexão com a internet.</string>
-    <string name="error_request_timeout">A requisição demorou demais. Tente de novo.</string>
-    <string name="error_unauthorized">Sua sessão expirou. Entre de novo.</string>
-    <string name="error_too_many_requests">Muitas tentativas. Aguarde um pouco.</string>
-    <string name="error_server">O servidor não respondeu. Tente mais tarde.</string>
-    <string name="error_serialization">Recebemos uma resposta inesperada do servidor.</string>
-    <string name="error_disk_full">Sem espaço no aparelho.</string>
-    <string name="error_unknown">Algo deu errado. Tente de novo.</string>
+    <string name="error_no_internet">No internet connection.</string>
+    <string name="error_request_timeout">The request took too long. Try again.</string>
+    <string name="error_unauthorized">Your session expired. Sign in again.</string>
+    <string name="error_too_many_requests">Too many attempts. Wait a moment.</string>
+    <string name="error_server">The server did not respond. Try again later.</string>
+    <string name="error_serialization">We got an unexpected response from the server.</string>
+    <string name="error_disk_full">Not enough storage on this device.</string>
+    <string name="error_unknown">Something went wrong. Try again.</string>
 </resources>

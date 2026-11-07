@@ -1,11 +1,12 @@
-# Arquitetura — cmp.skeleton.app (Compose Multiplatform)
+# Arquitetura — com.lucaslima.musicsearch (Compose Multiplatform)
 
 > Este documento descreve o *como*. O *porquê* de cada escolha nova vai para
 > [`docs/decisions/`](docs/decisions/index.md).
 >
-> **Estado do código:** esqueleto com duas features de exemplo. `alpha` tem as três camadas
-> (`domain`, `data`, `presentation`) e `beta` só `presentation`. A navegação é Alpha → Beta (com um
-> argumento) → voltar. Não há login, onboarding, banco local nem backend ainda.
+> **Estado do código:** app de busca de músicas (API do iTunes) construído sobre o esqueleto
+> cmpskeleton. Uma feature, `library` (`domain`, `data`, `presentation`), com as telas Songs,
+> Player e Album, mais o `:core:playback` (porta do player). As seções abaixo ainda usam as
+> features de exemplo do esqueleto (`alpha`, `beta`) para ilustrar as convenções.
 
 Alvos: **Android** e **iOS**, UI 100% compartilhada em Compose Multiplatform.
 
@@ -20,33 +21,37 @@ Convenção de referência: as skills da [PL Coding](https://github.com/PL-Codin
    Cada feature tem até três módulos: `domain`, `data` e `presentation`.
 2. **A dependência aponta para o domain.** `presentation → domain ← data`. O domain não conhece
    Compose, Ktor nem Android, e o compilador garante isso: essas bibliotecas não estão no
-   classpath dele.
+   classpath dele. Exceção única: `androidx.paging` (`paging-common`, Kotlin puro e KMP), porque o
+   contrato do repositório devolve `PagingData`. O `:konsist` libera só esse prefixo.
 3. **Feature não conhece feature.** Modelo compartilhado de verdade sobe para `:core:domain`.
    Navegação entre features é callback, montado no `:shared`.
 4. **`internal` por camada.** No domain, as interfaces e os modelos são públicos (são o contrato).
    No data, as implementações são `internal`. No presentation, ViewModel e telas são `internal`.
    Só saem de cada módulo o módulo Koin e, no presentation, a função do grafo de navegação, a
-   `NavKey` de entrada e a lista de keys.
+   `NavKey` de entrada e a lista de keys. Exceção: o ViewModel e o contrato (State/Action) que
+   outro composition root usa com UI própria ficam públicos. Hoje são os da `library`
+   (Songs, NowPlaying, Album), que o `:wearApp` reaproveita; as telas continuam `internal`.
 5. **Falha esperada é valor de retorno.** `Result<D, E : Error>`, com o erro declarado pela camada
    que o produz. Exceção só é capturada na camada dona dela.
 6. **O nome diz o que a classe é.** `InMemoryGreetingRepository`, `RoomXDataSource`,
    `KtorXDataSource`. Sem sufixo `Impl` (o Konsist reprova).
 7. **Só biblioteca KMP no `commonMain`.** Biblioteca de uma plataforma só (OkHttp, Darwin,
-   Credential Manager) entra apenas em `androidMain`/`iosMain` ou no `:androidApp`.
+   Credential Manager) entra apenas em `androidMain`/`iosMain` ou no `:androidApp`/`:wearApp`.
 
 ---
 
 ## 2. Mapa de módulos
 
 ```
-                    ┌─────────────┐     ┌──────────┐
-                    │ :androidApp │     │  iosApp  │          entry points
-                    └──────┬──────┘     └────┬─────┘
-                           └────────┬────────┘
-                            ┌───────▼───────┐
-                            │    :shared    │  composition root: App, NavDisplay,
-                            │               │  Koin, ligação entre features
-                            └───────┬───────┘
+                    ┌─────────────┐     ┌──────────┐     ┌──────────┐
+                    │ :androidApp │     │  iosApp  │     │ :wearApp │  entry points
+                    └──────┬──────┘     └────┬─────┘     └────┬─────┘
+                           └────────┬────────┘                │ composition root do
+                            ┌───────▼───────┐                 │ relógio: Koin, NavDisplay
+                            │    :shared    │  composition    │ e UI Wear Compose própria;
+                            │               │  root: App,     │ usa domain, data, player
+                            └───────┬───────┘  NavDisplay,    │ e ViewModels das features
+                                    │          Koin           ▼ direto, sem o :shared
                       ┌─────────────┴─────────────┐
               ┌───────▼────────┐          ┌───────▼────────┐
               │ :feature:alpha │          │ :feature:beta  │
@@ -64,11 +69,12 @@ Convenção de referência: as skills da [PL Coding](https://github.com/PL-Codin
 | Módulo | Pode depender de | Nunca |
 |---|---|---|
 | `:feature:x:domain` | `:core:domain` | qualquer outro módulo |
-| `:feature:x:data` | `:feature:x:domain`, `:core:domain`, `:core:data` | presentation, outra feature |
+| `:feature:x:data` | `:feature:x:domain`, `:core:domain`, `:core:data`, `:core:playback` | presentation, outra feature |
 | `:feature:x:presentation` | `:feature:x:domain`, `:core:domain`, `:core:presentation`, `:core:designsystem` | data, outra feature |
 | `:core:*` | outro `:core:*` (grafo acíclico) | qualquer `:feature:*` |
 | `:shared` | tudo | — |
 | `:androidApp` / `iosApp` | `:shared` | qualquer outro |
+| `:wearApp` | `:core:*`, `:feature:*` | `:shared` (o build falha: aplica o `app.module.rules`) |
 
 `:core:domain` está disponível para todo módulo. Esta tabela é verificada no build: o plugin
 `app.module.rules` (aplicado pelo `app.kmp.library`) falha a configuração do Gradle quando um módulo
@@ -79,10 +85,11 @@ camada, só para testes. Os imports também são verificados, pelo `:konsist`.
 
 | Módulo | Responsabilidade | O que **não** entra |
 |---|---|---|
-| `core:domain` | `Result`, `EmptyResult`, `Error`, `DataError` e os helpers `map`/`mapError`/`onSuccess`/`onFailure` | qualquer coisa com I/O ou UI |
-| `core:data` | `HttpClientFactory` (engine injetada), `safeCall` / `responseToResult`, `HttpClient.safeGet/safePost`, porta `AuthTokenProvider`, o `DataStore<Preferences>` do app | DTO ou endpoint de feature |
+| `core:domain` | `Result`, `EmptyResult`, `Error`, `DataError`, `DataErrorException` (leva o `DataError` pelo `LoadState.Error` do Paging) e os helpers `map`/`mapError`/`onSuccess`/`onFailure` | qualquer coisa com I/O ou UI |
+| `core:data` | `HttpClientFactory` (engine injetada; aceita JSON também como `text/javascript`), `safeCall` / `responseToResult`, `HttpClient.safeGet/safePost`, porta `AuthTokenProvider`, o `DataStore<Preferences>` do app | DTO ou endpoint de feature |
 | `core:presentation` | `UiText` (+ `asStringSuspend()`), `ObserveAsEvents`, `DataError.toUiText()` e as strings de erro, `NavKeyRegistration` | tela concreta, ViewModel de feature |
 | `core:designsystem` | tema (`AppTheme`, que segue o tema do sistema), tema estendido (`AppTheme.colors`, `AppTheme.typography`), `Spacing`, `Radius` | estado de tela, lógica; `CompositionLocal` além de `LocalAppColors`/`LocalAppTypography` (o ktlint reprova; esses dois estão no `suppressLintsFor` do `build.gradle.kts` raiz) |
+| `core:playback` | porta `AudioPlayer` + `PlaybackState` no `commonMain`; Media3 no `androidMain` (`PlaybackService` é um `MediaLibraryService` dono do ExoPlayer e da sessão: o app fala com ele por MediaController; Android Auto e o sistema navegam pela `MediaTree` e pedem música por voz), AVPlayer no `iosMain` (fila, repetir e Now Playing próprios). Porta `MediaCatalog` (seções, itens, busca) para quem toca de fora do app, opcional no Koin. `platformPlaybackModule` registra a implementação no Koin. Não conhece modelo de feature: recebe `PlayableItem` | regra de negócio; o adapter para o modelo da feature (`MediaPlayerController`, `LibraryMediaCatalog`) fica no data da feature |
 | `core:testing` | `runViewModelTest` e o bundle de testes como `api`; no Android, `text()` e `pluralText()` para o teste de UI ler Compose Resources | código de produção; fakes de interfaces de feature (ficam no `commonTest` da feature) |
 
 ---
@@ -193,6 +200,14 @@ nem `ObserveAsEvents`.
    O callback que empilha tela confere o topo da pilha (`if (backStack.lastOrNull() is AlphaKey)`):
    um segundo toque durante a transição não empilha a tela duas vezes.
 
+   **Elemento compartilhado entre telas.** O `:shared` põe o `NavDisplay` dentro de um
+   `SharedTransitionLayout` e passa o `SharedTransitionScope` para as entradas da feature
+   (`libraryEntries(sharedTransitionScope = ...)`). A feature junta esse escopo com o
+   `LocalNavAnimatedContentScope` da entrada num `ArtworkTransition` e o desce por parâmetro até a
+   capa (`Modifier.sharedArtwork`). Por parâmetro, não por `CompositionLocal`: o ktlint só aceita os
+   dois do design system. Nulo por padrão, então previews e testes de uma tela só desenham sem a
+   transição.
+
 2. **Porta + adapter.** Quem precisa declara a interface; quem sabe responder implementa.
    - `:core:data` declara `AuthTokenProvider`; a feature de auth (quando existir) implementa e
      registra no Koin. O Ktor ganha o Bearer token sem a camada de rede saber o que é login.
@@ -212,7 +227,7 @@ nem `ObserveAsEvents`.
 interface Error
 sealed interface Result<out D, out E : Error> {
     data class Success<out D>(val data: D) : Result<D, Nothing>
-    data class Error<out E : cmp.skeleton.app.core.domain.Error>(val error: E) : Result<Nothing, E>
+    data class Error<out E : com.lucaslima.musicsearch.core.domain.Error>(val error: E) : Result<Nothing, E>
 }
 typealias EmptyResult<E> = Result<Unit, E>
 
@@ -295,7 +310,7 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
   com alias `convention-*` (`libs.plugins.convention.cmp.feature`) e ID `app.*`. Artefatos usados
   sempre juntos viram bundle (`bundles.ktor`, `bundles.koin.compose`, `bundles.testing`).
 - **Project accessors tipados** (`TYPESAFE_PROJECT_ACCESSORS`): `projects.core.domain`, nunca
-  `project(":core:domain")`. Por isso o `rootProject.name` não pode ter ponto (`cmpskeleton`).
+  `project(":core:domain")`. Por isso o `rootProject.name` não pode ter ponto (`musicsearch`).
 - **Flags de compilador**, aplicadas pelo `app.kmp.library`: `-Xexpect-actual-classes`,
   `-opt-in=kotlin.time.ExperimentalTime`, `-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi`.
 - **Previews:** módulo KMP não tem `debugImplementation`. O `ui-tooling` entra via
@@ -304,9 +319,9 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
   gera bytecode 17 sem `jvmToolchain()`, para não exigir um segundo JDK instalado.
 - **JVM 17** em todos os módulos (Kotlin `jvmTarget` e `compileOptions` do `:androidApp`).
 - **minSdk 26**, compileSdk/targetSdk 36.
-- **Namespace Android** derivado do path: `:feature:alpha:data` → `cmp.skeleton.app.feature.alpha.data`.
+- **Namespace Android** derivado do path: `:feature:alpha:data` → `com.lucaslima.musicsearch.feature.alpha.data`.
 - **Compose Resources:** cada módulo com `composeResources` declara `packageOfResClass` no próprio
-  `build.gradle.kts` (`cmp.skeleton.app.feature.alpha.presentation.resources`).
+  `build.gradle.kts` (`com.lucaslima.musicsearch.feature.alpha.presentation.resources`).
 - **Segredos e URL base:** hoje o `API_BASE_URL` é uma constante em `:shared/di/AppModules.kt`, com
   valor de exemplo. O destino é BuildKonfig lendo do `local.properties`.
 - **Formatação e lint:** ktlint 1.8 (estilo `android_studio`, linha de 120) com as
@@ -333,7 +348,9 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
 - **Teste em aparelho:** `./gradlew connectedAndroidDeviceTest`, com um emulador ligado. A classe
   termina em `DeviceTest`, senão o runner não a executa (o `:konsist` confere). O nó é procurado por
   texto, e o texto vem da mesma string da tela: `text(Res.string.x)`. Nada de Robolectric nem de
-  `createComposeRule()` na JVM.
+  `createComposeRule()` na JVM. O `:wearApp` não é KMP: os testes de tela ficam no `androidTest`
+  dele (o `:konsist` trata os dois source sets como teste em aparelho) e rodam num emulador Wear
+  com `./gradlew :wearApp:connectedDebugAndroidTest`.
 - **CI** (`.github/workflows/ci.yml`): em todo PR e push na `main`, um job Linux roda
   `spotlessCheck`, `:konsist:test`, `testAndroidHostTest` e `:androidApp:assembleDebug`; em PR, um job
   macOS roda `iosSimulatorArm64Test` e um job Linux com emulador roda `connectedAndroidDeviceTest`.
@@ -368,12 +385,11 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
 
 | Item | Onde | Prioridade |
 |---|---|---|
-| Sem login, onboarding nem tela inicial real: o app abre na `alpha`, que é de exemplo | `:shared`, features novas | alta (primeiro passo de um projeto novo) |
 | iOS: o Xcode precisa de `TEAM_ID` em `iosApp/Configuration/Config.xcconfig` para rodar em aparelho; o ícone é um placeholder liso | `iosApp` | média |
-| `API_BASE_URL` é um valor de exemplo; falta BuildKonfig (dev / staging / prod) | `core:data`, `:shared` | alta, antes da primeira chamada real |
-| Firebase não está configurado: faltam `google-services.json` / `GoogleService-Info.plist`, o plugin e as dependências | `:androidApp`, `iosApp` | alta, para login social e por telefone |
-| Tema, cores e tipografia são placeholders, sem os tokens nem a fonte do projeto | `core:designsystem` | média |
-| Ícone e splash são placeholders | `:androidApp`, `iosApp` | baixa |
+| `API_BASE_URL` fixo no código (`:shared` e `:wearApp`); falta BuildKonfig se surgir outro ambiente | `:shared`, `:wearApp` | baixa |
+| O cache de busca cresce a cada termo novo: não há limpeza das buscas antigas | `feature:library:data` | média |
+| Títulos das seções do Android Auto em inglês fixo, sem tradução | `feature:library:data` (`LibraryMediaCatalog`) | baixa |
+| Telas do `:wearApp` não rodam no CI: precisam de um emulador de relógio | `.github/workflows/ci.yml` | baixa |
 | Testes de UI só no Android: o iOS não tem teste de tela | `iosApp` | baixa |
 
 ---
@@ -384,16 +400,21 @@ Todas as bibliotecas do `commonMain` são KMP. As de plataforma estão marcadas.
 
 | Camada | Escolha | Versão |
 |---|---|---|
-| Linguagem | Kotlin Multiplatform | 2.3.21 |
+| Linguagem | Kotlin Multiplatform | 2.4.21 |
 | UI | Compose Multiplatform | 1.11.1 |
 | Navegação | Navigation 3 (JetBrains) + `lifecycle-viewmodel-navigation3` | 1.1.1 / 2.11.0-beta01 |
 | DI | Koin (core, compose, compose-viewmodel) | 4.2.2 |
 | Rede | Ktor Client; engines OkHttp (Android) e Darwin (iOS) | 3.5.2 |
 | Preferências | DataStore Preferences (KMP) | 1.2.1 |
+| Banco local | Room KMP + SQLite embutido (`sqlite-bundled`), compilador via KSP | 2.8.5 / 2.7.1 / KSP 2.3.13 |
+| Paginação | Paging 3 (`paging-common` no domain/data, `paging-compose` no presentation) | 3.5.3 |
+| Imagens | Coil 3 (`coil-compose`) | 3.5.0 |
+| Player | Media3 ExoPlayer + Session (só `androidMain` do `:core:playback`) · AVPlayer (iOS) | 1.11.1 |
+| Relógio | Wear Compose Material 3 + Navigation 3 (só `:wearApp`); 1.7+ exige compileSdk 37 | 1.6.2 |
 | Serialização | kotlinx.serialization | 1.9.0 |
 | Assíncrono | kotlinx.coroutines | 1.10.2 |
 | Splash | SplashScreen API (Android) · LaunchScreen (iOS) | core-splashscreen 1.0.1 |
 | Testes | kotlin-test, Turbine, AssertK, kotlinx-coroutines-test, Ktor MockEngine, Konsist | — |
 | Testes em aparelho | Compose UI Test (JUnit4), AndroidX Test Runner, Espresso | 1.11.2 / 1.7.0 / 3.7.0 |
 | Build | Gradle + AGP + convention plugins em `build-logic` | 9.6.0 / 9.3.0 |
-| Android mínimo | minSdk 26 · compile/target 36 | — |
+| Android mínimo | minSdk 26 · compile/target 36 · relógio minSdk 30 (Wear OS 3) | — |

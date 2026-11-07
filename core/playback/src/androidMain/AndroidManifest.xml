@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!--
+      POST_NOTIFICATIONS vem do Media3 e o app não pede em tempo de execução: no Android 13+ a
+      notificação de uma MediaSession é isenta e aparece mesmo com a permissão negada.
+    -->
+
+    <application>
+        <!-- Exportado: notificação, tela de bloqueio e o Android Auto se conectam aqui. -->
+        <service
+            android:name="com.lucaslima.musicsearch.core.playback.PlaybackService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaLibraryService" />
+                <!-- O Android Auto procura o app por esta action. -->
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

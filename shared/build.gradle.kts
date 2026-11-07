@@ -12,7 +12,7 @@ kotlin {
             baseName = "Shared"
             isStatic = true
             // Sem isso o Kotlin/Native avisa que não consegue inferir o bundle ID do framework.
-            binaryOption("bundleId", "cmp.skeleton.app.shared")
+            binaryOption("bundleId", "com.lucaslima.musicsearch.shared")
         }
     }
 
@@ -24,13 +24,15 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.core.designsystem)
 
-            implementation(projects.feature.alpha.domain)
-            implementation(projects.feature.alpha.data)
-            implementation(projects.feature.alpha.presentation)
+            implementation(projects.core.playback)
 
-            implementation(projects.feature.beta.presentation)
+            implementation(projects.feature.library.domain)
+            implementation(projects.feature.library.data)
+            implementation(projects.feature.library.presentation)
 
             implementation(libs.bundles.koin.compose)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
             implementation(libs.androidx.navigation3.ui)
             implementation(libs.androidx.lifecycle.viewmodel.navigation3)
             implementation(libs.kotlinx.serialization.json)
