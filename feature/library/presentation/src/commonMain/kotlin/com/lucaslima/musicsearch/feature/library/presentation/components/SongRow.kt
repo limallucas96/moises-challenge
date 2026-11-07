@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,7 +42,7 @@ import kotlin.time.Duration.Companion.seconds
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Linha de música: capa, título, artista e o botão de mais opções. Música sem prévia de áudio
+ * Linha de música: capa, título, artista e, se [onMoreClick] vier, o botão de mais opções. Música sem prévia de áudio
  * aparece esmaecida e não toca, mas ainda abre as opções (dá para ver o álbum).
  */
 @Composable
@@ -49,7 +50,7 @@ internal fun SongRow(
     song: Song,
     isPlaying: Boolean,
     onClick: () -> Unit,
-    onMoreClick: () -> Unit,
+    onMoreClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     showArtwork: Boolean = true,
 ) {
@@ -102,12 +103,16 @@ internal fun SongRow(
                 )
             }
         }
-        IconButton(onClick = onMoreClick) {
-            Icon(
-                imageVector = AppIcons.MoreVert,
-                contentDescription = stringResource(Res.string.song_more_options, song.title),
-                tint = AppTheme.colors.muted,
-            )
+        if (onMoreClick != null) {
+            IconButton(onClick = onMoreClick) {
+                Icon(
+                    imageVector = AppIcons.MoreVert,
+                    contentDescription = stringResource(Res.string.song_more_options, song.title),
+                    tint = AppTheme.colors.muted,
+                )
+            }
+        } else {
+            Spacer(Modifier.width(Spacing.md))
         }
     }
 }

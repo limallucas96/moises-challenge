@@ -6,11 +6,13 @@ import com.lucaslima.musicsearch.feature.library.domain.Song
 import kotlin.time.Duration
 import kotlinx.coroutines.flow.MutableStateFlow
 
-/** Registra o último play; o estado é controlado pelo teste. */
+/** Registra os comandos recebidos; o estado é controlado pelo teste. */
 class FakePlayerController : PlayerController {
     override val state = MutableStateFlow(PlayerState())
     var lastQueue: List<Song>? = null
     var lastStartIndex: Int? = null
+    val commands = mutableListOf<String>()
+    val seeks = mutableListOf<Duration>()
 
     override fun play(
         queue: List<Song>,
@@ -20,13 +22,23 @@ class FakePlayerController : PlayerController {
         lastStartIndex = startIndex
     }
 
-    override fun togglePlayPause() = Unit
+    override fun togglePlayPause() {
+        commands += "togglePlayPause"
+    }
 
-    override fun seekTo(position: Duration) = Unit
+    override fun seekTo(position: Duration) {
+        seeks += position
+    }
 
-    override fun skipToNext() = Unit
+    override fun skipToNext() {
+        commands += "next"
+    }
 
-    override fun skipToPrevious() = Unit
+    override fun skipToPrevious() {
+        commands += "previous"
+    }
 
-    override fun toggleRepeat() = Unit
+    override fun toggleRepeat() {
+        commands += "repeat"
+    }
 }
