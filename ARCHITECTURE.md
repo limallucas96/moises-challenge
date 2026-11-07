@@ -81,8 +81,8 @@ camada, só para testes. Os imports também são verificados, pelo `:konsist`.
 
 | Módulo | Responsabilidade | O que **não** entra |
 |---|---|---|
-| `core:domain` | `Result`, `EmptyResult`, `Error`, `DataError` e os helpers `map`/`mapError`/`onSuccess`/`onFailure` | qualquer coisa com I/O ou UI |
-| `core:data` | `HttpClientFactory` (engine injetada), `safeCall` / `responseToResult`, `HttpClient.safeGet/safePost`, porta `AuthTokenProvider`, o `DataStore<Preferences>` do app | DTO ou endpoint de feature |
+| `core:domain` | `Result`, `EmptyResult`, `Error`, `DataError`, `DataErrorException` (leva o `DataError` pelo `LoadState.Error` do Paging) e os helpers `map`/`mapError`/`onSuccess`/`onFailure` | qualquer coisa com I/O ou UI |
+| `core:data` | `HttpClientFactory` (engine injetada; aceita JSON também como `text/javascript`), `safeCall` / `responseToResult`, `HttpClient.safeGet/safePost`, porta `AuthTokenProvider`, o `DataStore<Preferences>` do app | DTO ou endpoint de feature |
 | `core:presentation` | `UiText` (+ `asStringSuspend()`), `ObserveAsEvents`, `DataError.toUiText()` e as strings de erro, `NavKeyRegistration` | tela concreta, ViewModel de feature |
 | `core:designsystem` | tema (`AppTheme`, que segue o tema do sistema), tema estendido (`AppTheme.colors`, `AppTheme.typography`), `Spacing`, `Radius` | estado de tela, lógica; `CompositionLocal` além de `LocalAppColors`/`LocalAppTypography` (o ktlint reprova; esses dois estão no `suppressLintsFor` do `build.gradle.kts` raiz) |
 | `core:playback` | porta `AudioPlayer` + `PlaybackState` no `commonMain`; Media3 no `androidMain`, AVPlayer no `iosMain`. Não conhece modelo de feature: recebe `PlayableItem` | regra de negócio; o adapter para o modelo da feature fica no data da feature |

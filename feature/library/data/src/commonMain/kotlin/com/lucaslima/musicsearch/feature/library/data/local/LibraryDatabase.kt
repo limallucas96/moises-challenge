@@ -8,7 +8,16 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [SongEntity::class], version = 1)
+@Database(
+    entities = [
+        SongEntity::class,
+        SearchResultEntity::class,
+        SearchPageEntity::class,
+        RecentlyPlayedEntity::class,
+        AlbumEntity::class,
+    ],
+    version = 1,
+)
 @ConstructedBy(LibraryDatabaseConstructor::class)
 internal abstract class LibraryDatabase : RoomDatabase() {
     abstract fun songDao(): SongDao
