@@ -45,6 +45,9 @@ internal fun AppNavigation() {
         NavDisplay(
             backStack = backStack,
             sharedTransitionScope = this@SharedTransitionLayout,
+            transitionSpec = { screenTransition() },
+            popTransitionSpec = { screenTransition() },
+            predictivePopTransitionSpec = { screenTransition() },
             onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),

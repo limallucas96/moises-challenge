@@ -208,6 +208,12 @@ nem `ObserveAsEvents`.
    dois do design system. Nulo por padrão, então previews e testes de uma tela só desenham sem a
    transição.
 
+   **Transição entre telas.** O padrão do Navigation 3 é um fade de 700 ms, lento demais para uma
+   lista que abre o player. O `NavTransitions.kt` do `:shared` define uma transição só (fade de
+   300 ms na entrada, 200 ms na saída) e o `NavDisplay` usa a mesma em `transitionSpec`,
+   `popTransitionSpec` e `predictivePopTransitionSpec`. A capa compartilhada anda no mesmo tempo
+   da entrada, para chegar junto com a tela.
+
 2. **Porta + adapter.** Quem precisa declara a interface; quem sabe responder implementa.
    - `:core:data` declara `AuthTokenProvider`; a feature de auth (quando existir) implementa e
      registra no Koin. O Ktor ganha o Bearer token sem a camada de rede saber o que é login.
