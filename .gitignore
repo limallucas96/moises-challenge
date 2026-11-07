@@ -22,6 +22,5 @@ node_modules/
 androidApp/google-services.json
 GoogleService-Info.plist
 
-# Claude Code local
-.claude/settings.local.json
-.claude/worktrees/
+# Claude Code: skills, agentes e configurações ficam só na máquina, fora da entrega.
+.claude/
