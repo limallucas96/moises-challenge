@@ -82,4 +82,15 @@ class AlbumViewModelTest {
 
         assertThat(viewModel.state.value.playingSongId).isEqualTo(3L)
     }
+
+    @Test
+    fun tocar_a_faixa_que_ja_esta_no_player_nao_recomeca() = runViewModelTest {
+        repository.saved.value = album
+        val viewModel = viewModel()
+        player.state.value = PlayerState(song = song(2), isPlaying = true)
+
+        viewModel.onAction(AlbumAction.OnSongClick(song(2)))
+
+        assertThat(player.lastQueue).isNull()
+    }
 }

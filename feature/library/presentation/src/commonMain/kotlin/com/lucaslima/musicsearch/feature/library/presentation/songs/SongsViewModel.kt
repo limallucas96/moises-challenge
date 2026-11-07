@@ -59,7 +59,8 @@ class SongsViewModel(
 
             SongsAction.OnClearQueryClick -> updateQuery("")
 
-            is SongsAction.OnSongClick -> {
+            // A música que já está no player não recomeça: o Root só abre o player nela.
+            is SongsAction.OnSongClick -> if (action.song.id != _state.value.playingSongId) {
                 val index = action.queue.indexOfFirst { it.id == action.song.id }
                 if (index >= 0) {
                     playerController.play(action.queue, index)
