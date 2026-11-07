@@ -30,7 +30,7 @@ class TestRulesTest {
     @Test
     fun teste_de_ui_do_compose_so_roda_em_aparelho() {
         val violations = ProjectSources.tests
-            .filter { it.sourceSet != DEVICE_TEST }
+            .filter { it.sourceSet !in DEVICE_TESTS }
             .flatMap { file ->
                 file.imports
                     .filter { it.name.startsWith("androidx.compose.ui.test.") }
@@ -55,7 +55,7 @@ class TestRulesTest {
     fun classe_de_teste_em_aparelho_termina_em_DeviceTest() {
         // O runner só executa classes com DeviceTest no nome (app.device.test): outra passaria sem rodar.
         val violations = ProjectSources.tests
-            .filter { it.sourceSet == DEVICE_TEST && "@Test" in it.text && !it.fileName.endsWith("DeviceTest") }
+            .filter { it.sourceSet in DEVICE_TESTS && "@Test" in it.text && !it.fileName.endsWith("DeviceTest") }
             .map { it.relativePath }
 
         assertNoViolations("arquivo com @Test em androidDeviceTest se chama <Nome>DeviceTest", violations)
@@ -64,13 +64,14 @@ class TestRulesTest {
     @Test
     fun classe_DeviceTest_so_existe_em_androidDeviceTest() {
         val violations = ProjectSources.tests
-            .filter { it.sourceSet != DEVICE_TEST && it.fileName.endsWith("DeviceTest") }
+            .filter { it.sourceSet !in DEVICE_TESTS && it.fileName.endsWith("DeviceTest") }
             .map { it.relativePath }
 
         assertNoViolations("o sufixo DeviceTest é dos testes de androidDeviceTest", violations)
     }
 
     private companion object {
-        const val DEVICE_TEST = "androidDeviceTest"
+        /** O dos módulos KMP e o `androidTest` do :wearApp, que é um app Android comum. */
+        val DEVICE_TESTS = setOf("androidDeviceTest", "androidTest")
     }
 }

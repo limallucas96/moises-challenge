@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
-internal class SongsViewModel(
+class SongsViewModel(
     private val songRepository: SongRepository,
     private val playerController: PlayerController,
     private val savedStateHandle: SavedStateHandle,

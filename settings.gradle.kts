@@ -32,6 +32,7 @@ dependencyResolutionManagement {
 
 // --- Entry points e composição ---------------------------------------------
 include(":androidApp")
+include(":wearApp")
 include(":shared")
 
 // --- Core ------------------------------------------------------------------

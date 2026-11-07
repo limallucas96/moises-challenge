@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Topo do degradê da splash do Figma: a splash nativa e a do Compose começam na mesma cor. -->
+    <color name="splash_background">#FF0F3440</color>
+    <color name="ic_launcher_background">#FF0F3440</color>
+    <color name="splash_icon">#FFC4C4C4</color>
+</resources>

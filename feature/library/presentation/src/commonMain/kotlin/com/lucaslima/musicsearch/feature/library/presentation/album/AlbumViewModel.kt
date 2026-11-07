@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** Mostra o que está salvo na hora e atualiza pela rede em seguida (offline-first). */
-internal class AlbumViewModel(
+class AlbumViewModel(
     private val albumId: Long,
     private val albumRepository: AlbumRepository,
     private val playerController: PlayerController,

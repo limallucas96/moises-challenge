@@ -5,7 +5,7 @@ import com.lucaslima.musicsearch.feature.library.domain.RepeatMode
 import com.lucaslima.musicsearch.feature.library.domain.Song
 import kotlin.time.Duration
 
-internal data class NowPlayingState(
+data class NowPlayingState(
     val player: PlayerState = PlayerState(),
     /**
      * Posição escolhida no slider. Enquanto o dedo arrasta, e logo depois de soltar até o player
@@ -25,7 +25,7 @@ internal data class NowPlayingState(
     val canSkipPrevious: Boolean get() = song != null
 }
 
-internal sealed interface NowPlayingAction {
+sealed interface NowPlayingAction {
     data object OnBackClick : NowPlayingAction
 
     data object OnPlayPauseClick : NowPlayingAction

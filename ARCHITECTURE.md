@@ -28,27 +28,30 @@ Convenção de referência: as skills da [PL Coding](https://github.com/PL-Codin
 4. **`internal` por camada.** No domain, as interfaces e os modelos são públicos (são o contrato).
    No data, as implementações são `internal`. No presentation, ViewModel e telas são `internal`.
    Só saem de cada módulo o módulo Koin e, no presentation, a função do grafo de navegação, a
-   `NavKey` de entrada e a lista de keys.
+   `NavKey` de entrada e a lista de keys. Exceção: o ViewModel e o contrato (State/Action) que
+   outro composition root usa com UI própria ficam públicos. Hoje são os da `library`
+   (Songs, NowPlaying, Album), que o `:wearApp` reaproveita; as telas continuam `internal`.
 5. **Falha esperada é valor de retorno.** `Result<D, E : Error>`, com o erro declarado pela camada
    que o produz. Exceção só é capturada na camada dona dela.
 6. **O nome diz o que a classe é.** `InMemoryGreetingRepository`, `RoomXDataSource`,
    `KtorXDataSource`. Sem sufixo `Impl` (o Konsist reprova).
 7. **Só biblioteca KMP no `commonMain`.** Biblioteca de uma plataforma só (OkHttp, Darwin,
-   Credential Manager) entra apenas em `androidMain`/`iosMain` ou no `:androidApp`.
+   Credential Manager) entra apenas em `androidMain`/`iosMain` ou no `:androidApp`/`:wearApp`.
 
 ---
 
 ## 2. Mapa de módulos
 
 ```
-                    ┌─────────────┐     ┌──────────┐
-                    │ :androidApp │     │  iosApp  │          entry points
-                    └──────┬──────┘     └────┬─────┘
-                           └────────┬────────┘
-                            ┌───────▼───────┐
-                            │    :shared    │  composition root: App, NavDisplay,
-                            │               │  Koin, ligação entre features
-                            └───────┬───────┘
+                    ┌─────────────┐     ┌──────────┐     ┌──────────┐
+                    │ :androidApp │     │  iosApp  │     │ :wearApp │  entry points
+                    └──────┬──────┘     └────┬─────┘     └────┬─────┘
+                           └────────┬────────┘                │ composition root do
+                            ┌───────▼───────┐                 │ relógio: Koin, NavDisplay
+                            │    :shared    │  composition    │ e UI Wear Compose própria;
+                            │               │  root: App,     │ usa domain, data, player
+                            └───────┬───────┘  NavDisplay,    │ e ViewModels das features
+                                    │          Koin           ▼ direto, sem o :shared
                       ┌─────────────┴─────────────┐
               ┌───────▼────────┐          ┌───────▼────────┐
               │ :feature:alpha │          │ :feature:beta  │
@@ -71,6 +74,7 @@ Convenção de referência: as skills da [PL Coding](https://github.com/PL-Codin
 | `:core:*` | outro `:core:*` (grafo acíclico) | qualquer `:feature:*` |
 | `:shared` | tudo | — |
 | `:androidApp` / `iosApp` | `:shared` | qualquer outro |
+| `:wearApp` | `:core:*`, `:feature:*` | `:shared` (o build falha: aplica o `app.module.rules`) |
 
 `:core:domain` está disponível para todo módulo. Esta tabela é verificada no build: o plugin
 `app.module.rules` (aplicado pelo `app.kmp.library`) falha a configuração do Gradle quando um módulo
@@ -336,7 +340,9 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
 - **Teste em aparelho:** `./gradlew connectedAndroidDeviceTest`, com um emulador ligado. A classe
   termina em `DeviceTest`, senão o runner não a executa (o `:konsist` confere). O nó é procurado por
   texto, e o texto vem da mesma string da tela: `text(Res.string.x)`. Nada de Robolectric nem de
-  `createComposeRule()` na JVM.
+  `createComposeRule()` na JVM. O `:wearApp` não é KMP: os testes de tela ficam no `androidTest`
+  dele (o `:konsist` trata os dois source sets como teste em aparelho) e rodam num emulador Wear
+  com `./gradlew :wearApp:connectedDebugAndroidTest`.
 - **CI** (`.github/workflows/ci.yml`): em todo PR e push na `main`, um job Linux roda
   `spotlessCheck`, `:konsist:test`, `testAndroidHostTest` e `:androidApp:assembleDebug`; em PR, um job
   macOS roda `iosSimulatorArm64Test` e um job Linux com emulador roda `connectedAndroidDeviceTest`.
@@ -397,10 +403,11 @@ Todas as bibliotecas do `commonMain` são KMP. As de plataforma estão marcadas.
 | Paginação | Paging 3 (`paging-common` no domain/data, `paging-compose` no presentation) | 3.5.3 |
 | Imagens | Coil 3 (`coil-compose`) | 3.5.0 |
 | Player | Media3 ExoPlayer + Session (só `androidMain` do `:core:playback`) · AVPlayer (iOS) | 1.11.1 |
+| Relógio | Wear Compose Material 3 + Navigation 3 (só `:wearApp`); 1.7+ exige compileSdk 37 | 1.6.2 |
 | Serialização | kotlinx.serialization | 1.9.0 |
 | Assíncrono | kotlinx.coroutines | 1.10.2 |
 | Splash | SplashScreen API (Android) · LaunchScreen (iOS) | core-splashscreen 1.0.1 |
 | Testes | kotlin-test, Turbine, AssertK, kotlinx-coroutines-test, Ktor MockEngine, Konsist | — |
 | Testes em aparelho | Compose UI Test (JUnit4), AndroidX Test Runner, Espresso | 1.11.2 / 1.7.0 / 3.7.0 |
 | Build | Gradle + AGP + convention plugins em `build-logic` | 9.6.0 / 9.3.0 |
-| Android mínimo | minSdk 26 · compile/target 36 | — |
+| Android mínimo | minSdk 26 · compile/target 36 · relógio minSdk 30 (Wear OS 3) | — |

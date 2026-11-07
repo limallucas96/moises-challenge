@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class NowPlayingViewModel(
+class NowPlayingViewModel(
     private val playerController: PlayerController,
     private val seekSettleTimeout: Duration = SEEK_SETTLE_TIMEOUT,
 ) : ViewModel() {

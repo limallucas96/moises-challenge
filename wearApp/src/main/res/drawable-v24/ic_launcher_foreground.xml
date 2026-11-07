@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A nota musical da splash do Figma (path do Material "music_note", viewport 24) ampliada para a
+  área segura de 66dp do ícone adaptativo. Serve de ícone do app e da splash nativa.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="1.8"
+        android:scaleY="1.8"
+        android:translateX="32.4"
+        android:translateY="32.4">
+        <path
+            android:fillColor="@color/splash_icon"
+            android:pathData="M12,3v10.55c-0.59,-0.34 -1.27,-0.55 -2,-0.55 -2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4V7h4V3h-6z" />
+    </group>
+</vector>

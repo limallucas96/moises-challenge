@@ -6,7 +6,7 @@ import com.lucaslima.musicsearch.feature.library.domain.Song
  * Estado da Home. Os resultados paginados da busca não ficam aqui: `PagingData` é um fluxo
  * próprio ([SongsViewModel.searchResults]) e não deve ir dentro de um data class de estado.
  */
-internal data class SongsState(
+data class SongsState(
     val query: String = "",
     val recentlyPlayed: List<Song> = emptyList(),
     /** false até a primeira leitura dos recentes: evita piscar o estado vazio ao abrir. */
@@ -19,7 +19,7 @@ internal data class SongsState(
     val isSearching: Boolean get() = query.isNotBlank()
 }
 
-internal sealed interface SongsAction {
+sealed interface SongsAction {
     data class OnQueryChange(val query: String) : SongsAction
 
     data object OnClearQueryClick : SongsAction

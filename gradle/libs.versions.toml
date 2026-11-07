@@ -18,6 +18,7 @@ androidx-lifecycle = "2.11.0-beta01"
 androidx-navigation3 = "1.1.1"
 androidx-activity = "1.13.0"
 androidx-core-splashscreen = "1.0.1"
+androidx-wear-compose = "1.6.2"          # só :wearApp; 1.7+ exige compileSdk 37
 
 # --- Dados ---
 ktor = "3.5.2"
@@ -75,6 +76,9 @@ androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigat
 
 # --- Android-only (apenas :androidApp) ---
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-wear-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "androidx-wear-compose" }        # :wearApp
+androidx-wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "androidx-wear-compose" }      # :wearApp
+androidx-wear-compose-navigation3 = { module = "androidx.wear.compose:compose-navigation3", version.ref = "androidx-wear-compose" }    # :wearApp
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
 
 # --- KotlinX ---
@@ -170,3 +174,4 @@ convention-kmp-data = { id = "app.kmp.data", version = "unspecified" }
 convention-cmp-library = { id = "app.cmp.library", version = "unspecified" }
 convention-cmp-feature = { id = "app.cmp.feature", version = "unspecified" }
 convention-device-test = { id = "app.device.test", version = "unspecified" }
+convention-module-rules = { id = "app.module.rules", version = "unspecified" }

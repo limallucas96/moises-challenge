@@ -21,6 +21,7 @@ class ProjectSourcesTest {
             "feature/library/data",
             "feature/library/presentation",
             "shared",
+            "wearApp",
         )
         expected.forEach { module -> assertTrue(module in modules, "módulo $module não encontrado em $modules") }
 
