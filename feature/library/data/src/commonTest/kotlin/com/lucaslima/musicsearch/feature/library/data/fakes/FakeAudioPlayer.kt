@@ -17,11 +17,15 @@ internal class FakeAudioPlayer : AudioPlayer {
     var queue: List<PlayableItem> = emptyList()
         private set
     private var index = 0
+    var queueTitle: String? = null
+        private set
 
     override fun play(
         queue: List<PlayableItem>,
         startIndex: Int,
+        queueTitle: String?,
     ) {
+        this.queueTitle = queueTitle
         this.queue = queue
         index = startIndex
         publish(isPlaying = true)

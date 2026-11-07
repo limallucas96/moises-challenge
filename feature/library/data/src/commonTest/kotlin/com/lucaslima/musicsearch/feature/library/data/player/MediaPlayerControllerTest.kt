@@ -25,6 +25,7 @@ class MediaPlayerControllerTest {
         audioPlayer = audioPlayer,
         local = local,
         clock = FakeClock(),
+        knownSongs = KnownSongs(),
         scope = backgroundScope,
     )
 
@@ -38,6 +39,15 @@ class MediaPlayerControllerTest {
         assertThat(audioPlayer.queue.map { it.id }).containsExactly("1", "2", "3")
         assertThat(controller.state.value.song).isEqualTo(song(2))
         assertThat(controller.state.value.isPlaying).isTrue()
+    }
+
+    @Test
+    fun nome_da_fila_chega_ao_player() = runTest(UnconfinedTestDispatcher()) {
+        val controller = controller()
+
+        controller.play(listOf(song(1)), startIndex = 0, queueTitle = "Discovery")
+
+        assertThat(audioPlayer.queueTitle).isEqualTo("Discovery")
     }
 
     @Test

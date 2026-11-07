@@ -41,9 +41,9 @@ internal class AlbumViewModel(
             AlbumAction.OnRetryClick -> refresh()
 
             is AlbumAction.OnSongClick -> {
-                val songs = _state.value.album?.songs ?: return
-                val index = songs.indexOfFirst { it.id == action.song.id }
-                if (index >= 0) playerController.play(songs, index)
+                val album = _state.value.album ?: return
+                val index = album.songs.indexOfFirst { it.id == action.song.id }
+                if (index >= 0) playerController.play(album.songs, index, queueTitle = album.title)
             }
 
             // A navegação é do Root.

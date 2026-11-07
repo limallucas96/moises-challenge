@@ -1,9 +1,12 @@
 package com.lucaslima.musicsearch.feature.library.data.di
 
+import com.lucaslima.musicsearch.core.playback.MediaCatalog
+import com.lucaslima.musicsearch.feature.library.data.catalog.LibraryMediaCatalog
 import com.lucaslima.musicsearch.feature.library.data.local.LibraryDatabase
 import com.lucaslima.musicsearch.feature.library.data.local.LibraryLocalDataSource
 import com.lucaslima.musicsearch.feature.library.data.local.RoomLibraryDataSource
 import com.lucaslima.musicsearch.feature.library.data.local.buildLibraryDatabase
+import com.lucaslima.musicsearch.feature.library.data.player.KnownSongs
 import com.lucaslima.musicsearch.feature.library.data.player.MediaPlayerController
 import com.lucaslima.musicsearch.feature.library.data.remote.CatalogRemoteDataSource
 import com.lucaslima.musicsearch.feature.library.data.remote.ItunesCatalogDataSource
@@ -33,11 +36,15 @@ val libraryDataModule = module {
     single<SongRepository> { OfflineFirstSongRepository(remote = get(), local = get(), clock = get()) }
     singleOf(::OfflineFirstAlbumRepository) { bind<AlbumRepository>() }
 
+    singleOf(::KnownSongs)
+    single<MediaCatalog> { LibraryMediaCatalog(remote = get(), local = get(), knownSongs = get(), clock = get()) }
+
     single<PlayerController> {
         MediaPlayerController(
             audioPlayer = get(),
             local = get(),
             clock = get(),
+            knownSongs = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }

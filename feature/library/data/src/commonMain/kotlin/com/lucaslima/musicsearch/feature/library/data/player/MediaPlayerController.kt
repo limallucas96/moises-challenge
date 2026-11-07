@@ -13,7 +13,6 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -33,13 +32,11 @@ internal class MediaPlayerController(
     private val audioPlayer: AudioPlayer,
     private val local: LibraryLocalDataSource,
     private val clock: Clock,
+    private val knownSongs: KnownSongs,
     scope: CoroutineScope,
 ) : PlayerController {
 
-    /** A fila atual, pelo id do [PlayableItem], para voltar do item tocando para a [Song]. */
-    private val queue = MutableStateFlow<Map<String, Song>>(emptyMap())
-
-    override val state: StateFlow<PlayerState> = combine(audioPlayer.state, queue) { playback, songs ->
+    override val state: StateFlow<PlayerState> = combine(audioPlayer.state, knownSongs.songs) { playback, songs ->
         playback.toPlayerState(songs)
     }.stateIn(scope, SharingStarted.Eagerly, PlayerState())
 
@@ -62,13 +59,14 @@ internal class MediaPlayerController(
     override fun play(
         queue: List<Song>,
         startIndex: Int,
+        queueTitle: String?,
     ) {
         val start = queue.getOrNull(startIndex) ?: return
         val playable = queue.filter { it.previewUrl != null }
         val index = playable.indexOfFirst { it.id == start.id }
         if (index < 0) return
-        this.queue.value = playable.associateBy { it.id.toString() }
-        audioPlayer.play(playable.map { it.toPlayableItem() }, index)
+        knownSongs.remember(playable)
+        audioPlayer.play(playable.map { it.toPlayableItem() }, index, queueTitle)
     }
 
     override fun togglePlayPause() = audioPlayer.togglePlayPause()

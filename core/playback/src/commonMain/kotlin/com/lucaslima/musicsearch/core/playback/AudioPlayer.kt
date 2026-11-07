@@ -10,10 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 interface AudioPlayer {
     val state: StateFlow<PlaybackState>
 
-    /** Troca a fila e começa a tocar a partir de [startIndex]. */
+    /**
+     * Troca a fila e começa a tocar a partir de [startIndex]. [queueTitle] dá nome à fila onde o
+     * sistema a mostra (a tela de fila do Android Auto).
+     */
     fun play(
         queue: List<PlayableItem>,
         startIndex: Int,
+        queueTitle: String? = null,
     )
 
     fun togglePlayPause()

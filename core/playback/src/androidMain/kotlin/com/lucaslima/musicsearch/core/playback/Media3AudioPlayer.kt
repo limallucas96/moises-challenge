@@ -2,7 +2,6 @@ package com.lucaslima.musicsearch.core.playback
 
 import android.content.ComponentName
 import android.content.Context
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import androidx.media3.common.C
@@ -63,7 +62,9 @@ internal class Media3AudioPlayer(
     override fun play(
         queue: List<PlayableItem>,
         startIndex: Int,
+        queueTitle: String?,
     ) = command {
+        it.playlistMetadata = MediaMetadata.Builder().setTitle(queueTitle).build()
         it.setMediaItems(queue.map(PlayableItem::toMediaItem), startIndex, 0L)
         it.prepare()
         it.play()
@@ -163,34 +164,6 @@ internal class Media3AudioPlayer(
         val PROGRESS_INTERVAL = 250.milliseconds
     }
 }
-
-private fun PlayableItem.toMediaItem(): MediaItem {
-    val uri = Uri.parse(audioUrl)
-    return MediaItem.Builder()
-        .setMediaId(id)
-        .setUri(uri)
-        .setRequestMetadata(MediaItem.RequestMetadata.Builder().setMediaUri(uri).build())
-        .setMediaMetadata(
-            MediaMetadata.Builder()
-                .setTitle(title)
-                .setArtist(artist)
-                .setAlbumTitle(albumTitle)
-                .setArtworkUri(artworkUrl?.let(Uri::parse))
-                .setIsPlayable(true)
-                .setIsBrowsable(false)
-                .build(),
-        )
-        .build()
-}
-
-private fun MediaItem.toPlayableItem(): PlayableItem = PlayableItem(
-    id = mediaId,
-    title = mediaMetadata.title?.toString().orEmpty(),
-    artist = mediaMetadata.artist?.toString().orEmpty(),
-    albumTitle = mediaMetadata.albumTitle?.toString().orEmpty(),
-    artworkUrl = mediaMetadata.artworkUri?.toString(),
-    audioUrl = (localConfiguration?.uri ?: requestMetadata.mediaUri)?.toString().orEmpty(),
-)
 
 private fun Player.toPlaybackState(): PlaybackState = PlaybackState(
     current = currentMediaItem?.toPlayableItem(),

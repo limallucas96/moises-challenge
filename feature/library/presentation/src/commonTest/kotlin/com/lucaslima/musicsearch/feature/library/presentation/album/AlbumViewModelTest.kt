@@ -71,6 +71,7 @@ class AlbumViewModelTest {
 
         assertThat(player.lastQueue).isEqualTo(album.songs)
         assertThat(player.lastStartIndex).isEqualTo(1)
+        assertThat(player.lastQueueTitle).isEqualTo("Discovery")
     }
 
     @Test

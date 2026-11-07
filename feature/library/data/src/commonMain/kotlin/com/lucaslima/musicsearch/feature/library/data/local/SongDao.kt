@@ -60,6 +60,18 @@ internal abstract class SongDao {
         upsertSearchPage(SearchPageEntity(queryKey, nextPage, updatedAtMillis))
     }
 
+    @Query(
+        """
+        SELECT songs.* FROM search_results
+        INNER JOIN songs ON songs.id = search_results.songId
+        WHERE search_results.queryKey =
+            (SELECT queryKey FROM search_pages ORDER BY updatedAtMillis DESC LIMIT 1)
+        ORDER BY search_results.position
+        LIMIT :limit
+        """,
+    )
+    abstract suspend fun latestSearchResults(limit: Int): List<SongEntity>
+
     // --- Recentes ---
 
     @Query(

@@ -11,13 +11,16 @@ class FakePlayerController : PlayerController {
     override val state = MutableStateFlow(PlayerState())
     var lastQueue: List<Song>? = null
     var lastStartIndex: Int? = null
+    var lastQueueTitle: String? = null
     val commands = mutableListOf<String>()
     val seeks = mutableListOf<Duration>()
 
     override fun play(
         queue: List<Song>,
         startIndex: Int,
+        queueTitle: String?,
     ) {
+        lastQueueTitle = queueTitle
         lastQueue = queue
         lastStartIndex = startIndex
     }

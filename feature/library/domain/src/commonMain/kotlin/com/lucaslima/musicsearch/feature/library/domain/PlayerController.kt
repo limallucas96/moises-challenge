@@ -10,10 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 interface PlayerController {
     val state: StateFlow<PlayerState>
 
-    /** Troca a fila e toca a partir de [startIndex]. Músicas sem prévia de áudio ficam de fora. */
+    /**
+     * Troca a fila e toca a partir de [startIndex]. Músicas sem prévia de áudio ficam de fora.
+     * [queueTitle] nomeia a fila onde o sistema a mostra (ex.: o nome do álbum no Android Auto).
+     */
     fun play(
         queue: List<Song>,
         startIndex: Int,
+        queueTitle: String? = null,
     )
 
     fun togglePlayPause()

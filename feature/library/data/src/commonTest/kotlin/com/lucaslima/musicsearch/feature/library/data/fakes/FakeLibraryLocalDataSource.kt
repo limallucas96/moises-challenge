@@ -50,6 +50,11 @@ internal class FakeLibraryLocalDataSource : LibraryLocalDataSource {
     override fun observeRecentlyPlayed(limit: Int): Flow<List<Song>> =
         recents.map { entries -> entries.sortedByDescending { it.second }.take(limit).map { it.first } }
 
+    override suspend fun latestSearchResults(limit: Int): List<Song> {
+        val latest = searchPages.values.maxByOrNull { it.updatedAtMillis } ?: return emptyList()
+        return searchResults[latest.queryKey].orEmpty().take(limit)
+    }
+
     override suspend fun markPlayed(
         song: Song,
         playedAt: Instant,

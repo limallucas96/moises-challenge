@@ -101,6 +101,8 @@ internal class AvAudioPlayer(private val scope: CoroutineScope) : AudioPlayer {
     override fun play(
         queue: List<PlayableItem>,
         startIndex: Int,
+        // O Now Playing do iOS não mostra nome de fila.
+        queueTitle: String?,
     ) {
         if (startIndex !in queue.indices) return
         this.queue = queue
