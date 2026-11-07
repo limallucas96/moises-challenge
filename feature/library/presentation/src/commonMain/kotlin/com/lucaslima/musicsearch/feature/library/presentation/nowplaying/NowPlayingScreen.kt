@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +60,7 @@ import com.lucaslima.musicsearch.feature.library.presentation.resources.now_play
 import com.lucaslima.musicsearch.feature.library.presentation.resources.now_playing_empty_title
 import com.lucaslima.musicsearch.feature.library.presentation.resources.now_playing_error
 import com.lucaslima.musicsearch.feature.library.presentation.resources.now_playing_more_options
+import com.lucaslima.musicsearch.feature.library.presentation.resources.now_playing_page
 import com.lucaslima.musicsearch.feature.library.presentation.resources.now_playing_title
 import com.lucaslima.musicsearch.feature.library.presentation.resources.pause
 import com.lucaslima.musicsearch.feature.library.presentation.resources.play
@@ -162,22 +165,40 @@ private fun NowPlayingContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.padding(horizontal = Spacing.lg)) {
-        Box(
+        // Arrastar para o lado troca a capa pela onda sonora nas cores do álbum.
+        val pagerState = rememberPagerState(pageCount = { PAGE_COUNT })
+        val palette = rememberArtworkPalette(song.artworkUrl)
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Artwork(
-                url = song.artworkUrl,
-                cornerRadius = Radius.artworkLarge,
-                modifier = Modifier
-                    .sharedArtwork(artworkTransition, song.id)
+        ) { page ->
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                val pageModifier = Modifier
                     .fillMaxWidth(ARTWORK_WIDTH_FRACTION)
                     .widthIn(max = ARTWORK_MAX_WIDTH)
-                    .aspectRatio(1f),
-            )
+                    .aspectRatio(1f)
+                if (page == ARTWORK_PAGE) {
+                    Artwork(
+                        url = song.artworkUrl,
+                        cornerRadius = Radius.artworkLarge,
+                        modifier = Modifier
+                            .sharedArtwork(artworkTransition, song.id)
+                            .then(pageModifier),
+                    )
+                } else {
+                    SoundWave(isPlaying = state.player.isPlaying, colors = palette, modifier = pageModifier)
+                }
+            }
         }
+        PageIndicator(
+            current = pagerState.currentPage,
+            count = PAGE_COUNT,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = Spacing.sm),
+        )
         Text(
             text = song.title,
             style = AppTheme.typography.playerTitle,
@@ -209,6 +230,31 @@ private fun NowPlayingContent(
             modifier = Modifier.padding(top = Spacing.md),
         )
         Controls(state = state, onAction = onAction, modifier = Modifier.padding(top = Spacing.sm, bottom = Spacing.xl))
+    }
+}
+
+/** Bolinhas das páginas do pager; a atual em destaque. */
+@Composable
+private fun PageIndicator(
+    current: Int,
+    count: Int,
+    modifier: Modifier = Modifier,
+) {
+    val description = stringResource(Res.string.now_playing_page, current + 1, count)
+    Row(
+        modifier = modifier.semantics { contentDescription = description },
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        repeat(count) { index ->
+            Box(
+                modifier = Modifier
+                    .size(DOT_SIZE)
+                    .background(
+                        color = if (index == current) AppTheme.colors.ink else AppTheme.colors.line,
+                        shape = CircleShape,
+                    ),
+            )
+        }
     }
 }
 
@@ -378,6 +424,9 @@ private fun ControlButton(
 }
 
 private const val ARTWORK_WIDTH_FRACTION = 0.72f
+private const val PAGE_COUNT = 2
+private const val ARTWORK_PAGE = 0
+private val DOT_SIZE = 6.dp
 private val ARTWORK_MAX_WIDTH = 360.dp
 private val THUMB_SIZE = 12.dp
 private val TRACK_HEIGHT = 3.dp
