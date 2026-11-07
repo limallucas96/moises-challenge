@@ -385,12 +385,11 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
 
 | Item | Onde | Prioridade |
 |---|---|---|
-| Sem login, onboarding nem tela inicial real: o app abre na `alpha`, que é de exemplo | `:shared`, features novas | alta (primeiro passo de um projeto novo) |
 | iOS: o Xcode precisa de `TEAM_ID` em `iosApp/Configuration/Config.xcconfig` para rodar em aparelho; o ícone é um placeholder liso | `iosApp` | média |
-| `API_BASE_URL` é um valor de exemplo; falta BuildKonfig (dev / staging / prod) | `core:data`, `:shared` | alta, antes da primeira chamada real |
-| Firebase não está configurado: faltam `google-services.json` / `GoogleService-Info.plist`, o plugin e as dependências | `:androidApp`, `iosApp` | alta, para login social e por telefone |
-| Tema, cores e tipografia são placeholders, sem os tokens nem a fonte do projeto | `core:designsystem` | média |
-| Ícone e splash são placeholders | `:androidApp`, `iosApp` | baixa |
+| `API_BASE_URL` fixo no código (`:shared` e `:wearApp`); falta BuildKonfig se surgir outro ambiente | `:shared`, `:wearApp` | baixa |
+| O cache de busca cresce a cada termo novo: não há limpeza das buscas antigas | `feature:library:data` | média |
+| Títulos das seções do Android Auto em inglês fixo, sem tradução | `feature:library:data` (`LibraryMediaCatalog`) | baixa |
+| Telas do `:wearApp` não rodam no CI: precisam de um emulador de relógio | `.github/workflows/ci.yml` | baixa |
 | Testes de UI só no Android: o iOS não tem teste de tela | `iosApp` | baixa |
 
 ---
