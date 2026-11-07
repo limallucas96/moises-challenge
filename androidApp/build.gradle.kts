@@ -22,11 +22,11 @@ dependencies {
 }
 
 android {
-    namespace = "cmp.skeleton.app"
+    namespace = "com.lucaslima.musicsearch"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
-        applicationId = "cmp.skeleton.app"
+        applicationId = "com.lucaslima.musicsearch"
         minSdk = libs.versions.android.min.sdk.get().toInt()
         targetSdk = libs.versions.android.target.sdk.get().toInt()
         versionCode = 1

@@ -1,4 +1,4 @@
-# cmpskeleton
+# musicsearch
 
 Esqueleto base para projetos Kotlin Multiplatform + Compose Multiplatform (Android e iOS). Traz a
 arquitetura, as regras verificadas pela máquina (Gradle, Konsist, ktlint), o CI e as skills do Claude,
@@ -11,7 +11,7 @@ com duas features de exemplo (`alpha` e `beta`) que exercitam módulos, DI e nav
 ## Começando um projeto novo
 
 1. Copie a pasta e rode `git init`.
-2. Troque o pacote `cmp.skeleton.app` pelo do projeto: nas pastas `src/*/kotlin/cmp/skeleton/app`, no
+2. Troque o pacote `com.lucaslima.musicsearch` pelo do projeto: nas pastas `src/*/kotlin/com/lucaslima/musicsearch`, no
    código, no `build-logic` (namespace derivado do path), nos `packageOfResClass`, no `ROOT_PACKAGE` do
    `:konsist`, no `applicationId` e no `bundleId` do `:shared`.
 3. Troque `rootProject.name` (`settings.gradle.kts`, sem ponto), o `app_name` do Android e o

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		99E823C1C0E334723B27DBA7 /* CmpSkeleton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CmpSkeleton.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		99E823C1C0E334723B27DBA7 /* MusicSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -50,7 +50,7 @@
 		F0254C05DA35803ECE514832 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				99E823C1C0E334723B27DBA7 /* CmpSkeleton.app */,
+				99E823C1C0E334723B27DBA7 /* MusicSearch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,7 +87,7 @@
 			packageProductDependencies = (
 			);
 			productName = iosApp;
-			productReference = 99E823C1C0E334723B27DBA7 /* CmpSkeleton.app */;
+			productReference = 99E823C1C0E334723B27DBA7 /* MusicSearch.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

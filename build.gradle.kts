@@ -30,7 +30,7 @@ spotless {
             suppressLintsFor {
                 step = "ktlint"
                 shortCode = "compose:compositionlocal-allowlist"
-                path = "core/designsystem/src/commonMain/kotlin/cmp/skeleton/app/core/designsystem/theme/$file"
+                path = "core/designsystem/src/commonMain/kotlin/com/lucaslima/musicsearch/core/designsystem/theme/$file"
             }
         }
     }

@@ -1,4 +1,4 @@
-# Arquitetura — cmp.skeleton.app (Compose Multiplatform)
+# Arquitetura — com.lucaslima.musicsearch (Compose Multiplatform)
 
 > Este documento descreve o *como*. O *porquê* de cada escolha nova vai para
 > [`docs/decisions/`](docs/decisions/index.md).
@@ -212,7 +212,7 @@ nem `ObserveAsEvents`.
 interface Error
 sealed interface Result<out D, out E : Error> {
     data class Success<out D>(val data: D) : Result<D, Nothing>
-    data class Error<out E : cmp.skeleton.app.core.domain.Error>(val error: E) : Result<Nothing, E>
+    data class Error<out E : com.lucaslima.musicsearch.core.domain.Error>(val error: E) : Result<Nothing, E>
 }
 typealias EmptyResult<E> = Result<Unit, E>
 
@@ -295,7 +295,7 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
   com alias `convention-*` (`libs.plugins.convention.cmp.feature`) e ID `app.*`. Artefatos usados
   sempre juntos viram bundle (`bundles.ktor`, `bundles.koin.compose`, `bundles.testing`).
 - **Project accessors tipados** (`TYPESAFE_PROJECT_ACCESSORS`): `projects.core.domain`, nunca
-  `project(":core:domain")`. Por isso o `rootProject.name` não pode ter ponto (`cmpskeleton`).
+  `project(":core:domain")`. Por isso o `rootProject.name` não pode ter ponto (`musicsearch`).
 - **Flags de compilador**, aplicadas pelo `app.kmp.library`: `-Xexpect-actual-classes`,
   `-opt-in=kotlin.time.ExperimentalTime`, `-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi`.
 - **Previews:** módulo KMP não tem `debugImplementation`. O `ui-tooling` entra via
@@ -304,9 +304,9 @@ app.device.test   liga o androidDeviceTest (testes em aparelho): herda o commonT
   gera bytecode 17 sem `jvmToolchain()`, para não exigir um segundo JDK instalado.
 - **JVM 17** em todos os módulos (Kotlin `jvmTarget` e `compileOptions` do `:androidApp`).
 - **minSdk 26**, compileSdk/targetSdk 36.
-- **Namespace Android** derivado do path: `:feature:alpha:data` → `cmp.skeleton.app.feature.alpha.data`.
+- **Namespace Android** derivado do path: `:feature:alpha:data` → `com.lucaslima.musicsearch.feature.alpha.data`.
 - **Compose Resources:** cada módulo com `composeResources` declara `packageOfResClass` no próprio
-  `build.gradle.kts` (`cmp.skeleton.app.feature.alpha.presentation.resources`).
+  `build.gradle.kts` (`com.lucaslima.musicsearch.feature.alpha.presentation.resources`).
 - **Segredos e URL base:** hoje o `API_BASE_URL` é uma constante em `:shared/di/AppModules.kt`, com
   valor de exemplo. O destino é BuildKonfig lendo do `local.properties`.
 - **Formatação e lint:** ktlint 1.8 (estilo `android_studio`, linha de 120) com as

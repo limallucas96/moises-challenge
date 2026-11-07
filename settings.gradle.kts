@@ -1,4 +1,4 @@
-rootProject.name = "cmpskeleton"
+rootProject.name = "musicsearch"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-cmpskeleton: esqueleto base para projetos Kotlin Multiplatform + Compose Multiplatform (Android e iOS). Este
+musicsearch: esqueleto base para projetos Kotlin Multiplatform + Compose Multiplatform (Android e iOS). Este
 arquivo diz **como trabalhar** no projeto. As regras de código estão nos documentos abaixo e, sempre
 que dá, em checagens automáticas. Não repita regra aqui: aponte para onde ela mora.
 

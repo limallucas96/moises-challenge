@@ -3,5 +3,5 @@ plugins {
 }
 
 compose.resources {
-    packageOfResClass = "cmp.skeleton.app.feature.beta.presentation.resources"
+    packageOfResClass = "com.lucaslima.musicsearch.feature.beta.presentation.resources"
 }

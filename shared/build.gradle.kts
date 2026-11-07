@@ -12,7 +12,7 @@ kotlin {
             baseName = "Shared"
             isStatic = true
             // Sem isso o Kotlin/Native avisa que não consegue inferir o bundle ID do framework.
-            binaryOption("bundleId", "cmp.skeleton.app.shared")
+            binaryOption("bundleId", "com.lucaslima.musicsearch.shared")
         }
     }
 

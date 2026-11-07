@@ -14,5 +14,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "cmp.skeleton.app.core.presentation.resources"
+    packageOfResClass = "com.lucaslima.musicsearch.core.presentation.resources"
 }
