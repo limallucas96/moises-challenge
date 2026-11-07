@@ -12,7 +12,10 @@ import kotlinx.serialization.Serializable
 data object SongsKey : NavKey
 
 fun EntryProviderScope<NavKey>.libraryEntries() {
-    entry<SongsKey> { SongsRoot() }
+    entry<SongsKey> {
+        // Player e álbum chegam na etapa 4.
+        SongsRoot(onOpenPlayer = {}, onOpenAlbum = {})
+    }
 }
 
 /** TODAS as NavKey da feature. Key nova = uma linha nova aqui. */
