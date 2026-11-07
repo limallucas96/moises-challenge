@@ -36,6 +36,7 @@ jobs:
           :konsist:test
           testAndroidHostTest
           :androidApp:assembleDebug
+          :wearApp:assembleDebug
           --continue
 
       - name: Relatórios de teste
