@@ -16,10 +16,10 @@ class ProjectSourcesTest {
         val expected = listOf(
             "core/domain",
             "core/data",
-            "feature/alpha/domain",
-            "feature/alpha/data",
-            "feature/alpha/presentation",
-            "feature/beta/presentation",
+            "core/playback",
+            "feature/library/domain",
+            "feature/library/data",
+            "feature/library/presentation",
             "shared",
         )
         expected.forEach { module -> assertTrue(module in modules, "módulo $module não encontrado em $modules") }

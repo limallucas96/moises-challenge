@@ -10,12 +10,9 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.lucaslima.musicsearch.core.presentation.navigation.NavKeyRegistration
 import com.lucaslima.musicsearch.core.presentation.navigation.register
-import com.lucaslima.musicsearch.feature.alpha.presentation.navigation.AlphaKey
-import com.lucaslima.musicsearch.feature.alpha.presentation.navigation.alphaEntries
-import com.lucaslima.musicsearch.feature.alpha.presentation.navigation.alphaNavKeys
-import com.lucaslima.musicsearch.feature.beta.presentation.navigation.BetaKey
-import com.lucaslima.musicsearch.feature.beta.presentation.navigation.betaEntries
-import com.lucaslima.musicsearch.feature.beta.presentation.navigation.betaNavKeys
+import com.lucaslima.musicsearch.feature.library.presentation.navigation.SongsKey
+import com.lucaslima.musicsearch.feature.library.presentation.navigation.libraryEntries
+import com.lucaslima.musicsearch.feature.library.presentation.navigation.libraryNavKeys
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
@@ -23,7 +20,7 @@ import kotlinx.serialization.modules.polymorphic
  * Todas as NavKey do app, somando a lista de cada feature. Feature nova = somar a lista dela
  * aqui. Sem registro a pilha não é restaurada (morte de processo no Android, sempre no iOS).
  */
-internal val allNavKeys: List<NavKeyRegistration<*>> = alphaNavKeys + betaNavKeys
+internal val allNavKeys: List<NavKeyRegistration<*>> = libraryNavKeys
 
 internal val navSerializersModule = SerializersModule {
     polymorphic(NavKey::class) {
@@ -38,7 +35,7 @@ internal val navConfig = SavedStateConfiguration {
 /** Único lugar que conhece mais de uma feature: dono da pilha e da fiação entre elas. */
 @Composable
 internal fun AppNavigation() {
-    val backStack = rememberNavBackStack(navConfig, AlphaKey)
+    val backStack = rememberNavBackStack(navConfig, SongsKey)
 
     NavDisplay(
         backStack = backStack,
@@ -48,17 +45,7 @@ internal fun AppNavigation() {
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider {
-            alphaEntries(
-                // Só empilha se a Alpha ainda é a tela do topo: um segundo toque durante a
-                // transição não abre a Beta duas vezes.
-                onOpenBetaClick = { message ->
-                    if (backStack.lastOrNull() is AlphaKey) backStack.add(BetaKey(message))
-                },
-            )
-            betaEntries(
-                // Só sai se a Beta ainda está no topo: senão tiraria a tela de baixo da pilha.
-                onBackClick = { if (backStack.lastOrNull() is BetaKey) backStack.removeLastOrNull() },
-            )
+            libraryEntries()
         },
     )
 }

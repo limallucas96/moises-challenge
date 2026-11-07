@@ -15,6 +15,12 @@ class LayerRulesTest {
         "okio.",
     )
 
+    /**
+     * Exceção: o paging-common é Kotlin puro (KMP, sem dependência de Android), e o contrato do
+     * repositório devolve `PagingData`. Sem ele, o domain teria que reinventar a paginação.
+     */
+    private val domainAllowedPrefixes = listOf("androidx.paging.")
+
     @Test
     fun domain_nao_importa_framework() {
         val violations = ProjectSources.production
@@ -22,6 +28,7 @@ class LayerRulesTest {
             .flatMap { file ->
                 file.imports
                     .filter { import -> frameworkPrefixes.any { import.name.startsWith(it) } }
+                    .filterNot { import -> domainAllowedPrefixes.any { import.name.startsWith(it) } }
                     .map { "${file.relativePath}: import ${it.name}" }
             }
 

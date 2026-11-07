@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="beta_title">Beta</string>
-    <string name="beta_tap">Tap me</string>
-    <string name="beta_taps">Taps: %1$d</string>
-    <string name="beta_back">Back</string>
-</resources>

@@ -24,11 +24,11 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.core.designsystem)
 
-            implementation(projects.feature.alpha.domain)
-            implementation(projects.feature.alpha.data)
-            implementation(projects.feature.alpha.presentation)
+            implementation(projects.core.playback)
 
-            implementation(projects.feature.beta.presentation)
+            implementation(projects.feature.library.domain)
+            implementation(projects.feature.library.data)
+            implementation(projects.feature.library.presentation)
 
             implementation(libs.bundles.koin.compose)
             implementation(libs.androidx.navigation3.ui)

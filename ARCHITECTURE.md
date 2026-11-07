@@ -3,9 +3,10 @@
 > Este documento descreve o *como*. O *porquê* de cada escolha nova vai para
 > [`docs/decisions/`](docs/decisions/index.md).
 >
-> **Estado do código:** esqueleto com duas features de exemplo. `alpha` tem as três camadas
-> (`domain`, `data`, `presentation`) e `beta` só `presentation`. A navegação é Alpha → Beta (com um
-> argumento) → voltar. Não há login, onboarding, banco local nem backend ainda.
+> **Estado do código:** app de busca de músicas (API do iTunes) construído sobre o esqueleto
+> cmpskeleton. Uma feature, `library` (`domain`, `data`, `presentation`), com as telas Songs,
+> Player e Album, mais o `:core:playback` (porta do player). As seções abaixo ainda usam as
+> features de exemplo do esqueleto (`alpha`, `beta`) para ilustrar as convenções.
 
 Alvos: **Android** e **iOS**, UI 100% compartilhada em Compose Multiplatform.
 
@@ -20,7 +21,8 @@ Convenção de referência: as skills da [PL Coding](https://github.com/PL-Codin
    Cada feature tem até três módulos: `domain`, `data` e `presentation`.
 2. **A dependência aponta para o domain.** `presentation → domain ← data`. O domain não conhece
    Compose, Ktor nem Android, e o compilador garante isso: essas bibliotecas não estão no
-   classpath dele.
+   classpath dele. Exceção única: `androidx.paging` (`paging-common`, Kotlin puro e KMP), porque o
+   contrato do repositório devolve `PagingData`. O `:konsist` libera só esse prefixo.
 3. **Feature não conhece feature.** Modelo compartilhado de verdade sobe para `:core:domain`.
    Navegação entre features é callback, montado no `:shared`.
 4. **`internal` por camada.** No domain, as interfaces e os modelos são públicos (são o contrato).
@@ -64,7 +66,7 @@ Convenção de referência: as skills da [PL Coding](https://github.com/PL-Codin
 | Módulo | Pode depender de | Nunca |
 |---|---|---|
 | `:feature:x:domain` | `:core:domain` | qualquer outro módulo |
-| `:feature:x:data` | `:feature:x:domain`, `:core:domain`, `:core:data` | presentation, outra feature |
+| `:feature:x:data` | `:feature:x:domain`, `:core:domain`, `:core:data`, `:core:playback` | presentation, outra feature |
 | `:feature:x:presentation` | `:feature:x:domain`, `:core:domain`, `:core:presentation`, `:core:designsystem` | data, outra feature |
 | `:core:*` | outro `:core:*` (grafo acíclico) | qualquer `:feature:*` |
 | `:shared` | tudo | — |
@@ -83,6 +85,7 @@ camada, só para testes. Os imports também são verificados, pelo `:konsist`.
 | `core:data` | `HttpClientFactory` (engine injetada), `safeCall` / `responseToResult`, `HttpClient.safeGet/safePost`, porta `AuthTokenProvider`, o `DataStore<Preferences>` do app | DTO ou endpoint de feature |
 | `core:presentation` | `UiText` (+ `asStringSuspend()`), `ObserveAsEvents`, `DataError.toUiText()` e as strings de erro, `NavKeyRegistration` | tela concreta, ViewModel de feature |
 | `core:designsystem` | tema (`AppTheme`, que segue o tema do sistema), tema estendido (`AppTheme.colors`, `AppTheme.typography`), `Spacing`, `Radius` | estado de tela, lógica; `CompositionLocal` além de `LocalAppColors`/`LocalAppTypography` (o ktlint reprova; esses dois estão no `suppressLintsFor` do `build.gradle.kts` raiz) |
+| `core:playback` | porta `AudioPlayer` + `PlaybackState` no `commonMain`; Media3 no `androidMain`, AVPlayer no `iosMain`. Não conhece modelo de feature: recebe `PlayableItem` | regra de negócio; o adapter para o modelo da feature fica no data da feature |
 | `core:testing` | `runViewModelTest` e o bundle de testes como `api`; no Android, `text()` e `pluralText()` para o teste de UI ler Compose Resources | código de produção; fakes de interfaces de feature (ficam no `commonTest` da feature) |
 
 ---
@@ -384,12 +387,16 @@ Todas as bibliotecas do `commonMain` são KMP. As de plataforma estão marcadas.
 
 | Camada | Escolha | Versão |
 |---|---|---|
-| Linguagem | Kotlin Multiplatform | 2.3.21 |
+| Linguagem | Kotlin Multiplatform | 2.4.21 |
 | UI | Compose Multiplatform | 1.11.1 |
 | Navegação | Navigation 3 (JetBrains) + `lifecycle-viewmodel-navigation3` | 1.1.1 / 2.11.0-beta01 |
 | DI | Koin (core, compose, compose-viewmodel) | 4.2.2 |
 | Rede | Ktor Client; engines OkHttp (Android) e Darwin (iOS) | 3.5.2 |
 | Preferências | DataStore Preferences (KMP) | 1.2.1 |
+| Banco local | Room KMP + SQLite embutido (`sqlite-bundled`), compilador via KSP | 2.8.5 / 2.7.1 / KSP 2.3.13 |
+| Paginação | Paging 3 (`paging-common` no domain/data, `paging-compose` no presentation) | 3.5.3 |
+| Imagens | Coil 3 (`coil-compose`) | 3.5.0 |
+| Player | Media3 ExoPlayer + Session (só `androidMain` do `:core:playback`) · AVPlayer (iOS) | 1.11.1 |
 | Serialização | kotlinx.serialization | 1.9.0 |
 | Assíncrono | kotlinx.coroutines | 1.10.2 |
 | Splash | SplashScreen API (Android) · LaunchScreen (iOS) | core-splashscreen 1.0.1 |
