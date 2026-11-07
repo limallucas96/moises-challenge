@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="860" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="40" y="44" font-size="24" font-weight="700" fill="#0f172a">musicsearch architecture</text>
+  <text x="40" y="70" font-size="14" fill="#475569">One Kotlin Multiplatform codebase. Arrows point from a module to what it depends on.</text>
+
+  <!-- Row 1: apps -->
+  <text x="40" y="108" font-size="12" font-weight="700" fill="#64748b" letter-spacing="1.5">APPS</text>
+  <g>
+    <rect x="40" y="118" width="250" height="72" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="165" y="148" font-size="16" font-weight="700" fill="#312e81" text-anchor="middle">Android phone</text>
+    <text x="165" y="170" font-size="13" fill="#4338ca" text-anchor="middle">:androidApp</text>
+
+    <rect x="320" y="118" width="250" height="72" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="445" y="148" font-size="16" font-weight="700" fill="#312e81" text-anchor="middle">iPhone</text>
+    <text x="445" y="170" font-size="13" fill="#4338ca" text-anchor="middle">iosApp (Xcode)</text>
+
+    <rect x="600" y="118" width="250" height="72" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="725" y="148" font-size="16" font-weight="700" fill="#312e81" text-anchor="middle">Wear OS watch</text>
+    <text x="725" y="170" font-size="13" fill="#4338ca" text-anchor="middle">:wearApp · its own Wear UI</text>
+
+    <rect x="880" y="118" width="280" height="72" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="1020" y="148" font-size="16" font-weight="700" fill="#312e81" text-anchor="middle">Android Auto</text>
+    <text x="1020" y="170" font-size="13" fill="#4338ca" text-anchor="middle">car screen, no app code of its own</text>
+  </g>
+
+  <!-- Row 2: shared -->
+  <rect x="40" y="226" width="530" height="62" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="305" y="253" font-size="16" font-weight="700" fill="#0f172a" text-anchor="middle">:shared — the app shell</text>
+  <text x="305" y="274" font-size="13" fill="#334155" text-anchor="middle">Koin setup · Navigation 3 back stack · screen transitions</text>
+
+  <!-- arrows apps -> shared / feature / playback -->
+  <line x1="165" y1="190" x2="165" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="445" y1="190" x2="445" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="725" y1="190" x2="725" y2="318" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="1020" y1="190" x2="1020" y2="318" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="305" y1="288" x2="305" y2="318" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- Row 3: feature library -->
+  <text x="40" y="314" font-size="12" font-weight="700" fill="#64748b" letter-spacing="1.5">FEATURE</text>
+  <rect x="40" y="322" width="810" height="300" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="60" y="348" font-size="15" font-weight="700" fill="#0f172a">:feature:library — search, player, album, recently played</text>
+
+  <!-- presentation -->
+  <rect x="60" y="362" width="770" height="76" rx="10" fill="#ecfeff" stroke="#0891b2" stroke-width="1.5"/>
+  <text x="80" y="387" font-size="15" font-weight="700" fill="#164e63">presentation · MVI</text>
+  <rect x="80" y="398" width="190" height="30" rx="6" fill="#ffffff" stroke="#0891b2"/>
+  <text x="175" y="418" font-size="13" fill="#155e75" text-anchor="middle">Screen (Compose)</text>
+  <rect x="440" y="398" width="190" height="30" rx="6" fill="#ffffff" stroke="#0891b2"/>
+  <text x="535" y="418" font-size="13" fill="#155e75" text-anchor="middle">ViewModel</text>
+  <line x1="272" y1="405" x2="436" y2="405" stroke="#0891b2" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="354" y="400" font-size="12" fill="#0e7490" text-anchor="middle">Action</text>
+  <line x1="438" y1="422" x2="274" y2="422" stroke="#0891b2" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="354" y="436" font-size="12" fill="#0e7490" text-anchor="middle">State</text>
+  <text x="650" y="410" font-size="12" fill="#155e75">Songs · Now playing</text>
+  <text x="650" y="426" font-size="12" fill="#155e75">Album · mini player</text>
+
+  <!-- domain -->
+  <rect x="60" y="462" width="770" height="60" rx="10" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="80" y="487" font-size="15" font-weight="700" fill="#713f12">domain · plain Kotlin</text>
+  <text x="80" y="508" font-size="13" fill="#854d0e">Song, Album · SongRepository, AlbumRepository, PlayerController (interfaces)</text>
+
+  <!-- data -->
+  <rect x="60" y="546" width="770" height="62" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="80" y="571" font-size="15" font-weight="700" fill="#14532d">data · offline-first</text>
+  <text x="80" y="592" font-size="13" fill="#166534">Repositories · Paging RemoteMediator · Room DAO · iTunes client · MediaPlayerController · LibraryMediaCatalog</text>
+
+  <line x1="445" y1="438" x2="445" y2="458" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="445" y1="546" x2="445" y2="526" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="455" y="540" font-size="11" fill="#475569">implements</text>
+
+  <!-- core playback -->
+  <text x="880" y="314" font-size="12" font-weight="700" fill="#64748b" letter-spacing="1.5">PLAYBACK</text>
+  <rect x="880" y="322" width="280" height="300" rx="14" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="900" y="348" font-size="15" font-weight="700" fill="#7c2d12">:core:playback</text>
+  <rect x="900" y="362" width="240" height="44" rx="8" fill="#ffffff" stroke="#ea580c"/>
+  <text x="1020" y="381" font-size="13" font-weight="700" fill="#9a3412" text-anchor="middle">AudioPlayer port</text>
+  <text x="1020" y="398" font-size="12" fill="#9a3412" text-anchor="middle">play · pause · seek · queue</text>
+  <rect x="900" y="418" width="240" height="62" rx="8" fill="#ffffff" stroke="#ea580c"/>
+  <text x="1020" y="440" font-size="13" font-weight="700" fill="#9a3412" text-anchor="middle">Android: PlaybackService</text>
+  <text x="1020" y="457" font-size="12" fill="#9a3412" text-anchor="middle">Media3 ExoPlayer + session</text>
+  <text x="1020" y="472" font-size="12" fill="#9a3412" text-anchor="middle">notification · lock screen · Auto</text>
+  <rect x="900" y="492" width="240" height="40" rx="8" fill="#ffffff" stroke="#ea580c"/>
+  <text x="1020" y="517" font-size="13" font-weight="700" fill="#9a3412" text-anchor="middle">iOS: AVPlayer</text>
+  <rect x="900" y="544" width="240" height="62" rx="8" fill="#ffffff" stroke="#ea580c"/>
+  <text x="1020" y="566" font-size="13" font-weight="700" fill="#9a3412" text-anchor="middle">MediaCatalog port</text>
+  <text x="1020" y="584" font-size="12" fill="#9a3412" text-anchor="middle">Android Auto tabs and</text>
+  <text x="1020" y="598" font-size="12" fill="#9a3412" text-anchor="middle">voice search</text>
+
+  <!-- data -> playback -->
+  <path d="M830,577 L862,577 L862,384 L896,384" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- Row 4: core -->
+  <text x="40" y="662" font-size="12" font-weight="700" fill="#64748b" letter-spacing="1.5">CORE</text>
+  <g font-size="13">
+    <rect x="40" y="670" width="262" height="58" rx="10" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="171" y="694" font-weight="700" fill="#0f172a" text-anchor="middle">:core:domain</text>
+    <text x="171" y="714" fill="#334155" text-anchor="middle">Result · DataError</text>
+    <rect x="322" y="670" width="262" height="58" rx="10" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="453" y="694" font-weight="700" fill="#0f172a" text-anchor="middle">:core:data</text>
+    <text x="453" y="714" fill="#334155" text-anchor="middle">Ktor client · safeCall</text>
+    <rect x="604" y="670" width="262" height="58" rx="10" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="735" y="694" font-weight="700" fill="#0f172a" text-anchor="middle">:core:presentation</text>
+    <text x="735" y="714" fill="#334155" text-anchor="middle">UiText · error messages</text>
+    <rect x="886" y="670" width="274" height="58" rx="10" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="1023" y="694" font-weight="700" fill="#0f172a" text-anchor="middle">:core:designsystem</text>
+    <text x="1023" y="714" fill="#334155" text-anchor="middle">theme · colors · icons</text>
+  </g>
+  <line x1="445" y1="622" x2="445" y2="666" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- Row 5: outside the app -->
+  <text x="40" y="772" font-size="12" font-weight="700" fill="#64748b" letter-spacing="1.5">DATA SOURCES</text>
+  <rect x="40" y="780" width="520" height="56" rx="28" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="300" y="804" font-size="14" font-weight="700" fill="#14532d" text-anchor="middle">Room / SQLite on the device</text>
+  <text x="300" y="823" font-size="12" fill="#166534" text-anchor="middle">single source of truth: the screens only read from here</text>
+  <rect x="640" y="780" width="520" height="56" rx="28" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="900" y="804" font-size="14" font-weight="700" fill="#14532d" text-anchor="middle">iTunes Search API</text>
+  <text x="900" y="823" font-size="12" fill="#166534" text-anchor="middle">fills the database page by page (RemoteMediator)</text>
+  <line x1="600" y1="808" x2="564" y2="808" stroke="#16a34a" stroke-width="1.8" marker-end="url(#arrowGreen)"/>
+  <line x1="600" y1="808" x2="636" y2="808" stroke="#16a34a" stroke-width="1.8"/>
+</svg>

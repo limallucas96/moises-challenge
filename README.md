@@ -15,6 +15,8 @@ Built with Kotlin Multiplatform, Compose Multiplatform, MVI, Room, Paging 3, Kto
   recently played list when the search is empty.
 - **Player:** artwork, title, artist, a seekable timeline, play/pause, previous/next and repeat
   (off, one, all). Playback continues in the background with the system media notification.
+  Opening the song that is already playing jumps to the player at the current position instead
+  of starting it over.
 - **More options:** a bottom sheet from any song row or from the player, with "View album".
 - **Album:** cover, title, artist and the full track list in disc order. Tapping a track plays the album from there.
 - **Offline-first:** results come from a local database. Earlier searches, recently played songs and
@@ -23,6 +25,12 @@ Built with Kotlin Multiplatform, Compose Multiplatform, MVI, Room, Paging 3, Kto
 **Extras**
 
 - **Shared-element transition:** the song cover grows from the list row into the player and back.
+  Screen transitions are short (300 ms in, 200 ms out) so navigation feels direct.
+- **Mini player:** back on Songs, a floating bar shows the current song with play/pause and opens
+  the player when tapped.
+- **Sound wave page:** swipe the player cover sideways to see an animated wave in the colors of the
+  album art. The wave is drawn from the playback state, not from the audio itself, and gray covers
+  fall back to a green palette.
 - **Accessibility:** headings, state descriptions ("Now playing", "No preview"), labelled
   controls, a timeline that reads as "0:12 of 0:30", and live announcements for empty, error and
   offline states.
@@ -33,16 +41,8 @@ Built with Kotlin Multiplatform, Compose Multiplatform, MVI, Room, Paging 3, Kto
 
 ## Demo
 
-All recordings and screenshots are in [`docs/demo/`](docs/demo). The videos are silent screen
-recordings.
-
-| Video | What it shows |
-|---|---|
-| [`01-phone-search-and-play.mp4`](docs/demo/01-phone-search-and-play.mp4) | Splash, search, infinite scrolling, the cover transition into the player, play/pause and next |
-| [`02-phone-album-and-recents.mp4`](docs/demo/02-phone-album-and-recents.mp4) | More options, the album screen, playing from the album, repeat, and recently played |
-| [`03-phone-offline.mp4`](docs/demo/03-phone-offline.mp4) | No network: a cached search still opens, a new one shows the error, and retry works once back online |
-| [`04-wear-search-play-albums.mp4`](docs/demo/04-wear-search-play-albums.mp4) | Wear OS: menu, search with the watch keyboard, the player and next track |
-| [`05-android-auto.mp4`](docs/demo/05-android-auto.mp4) | Android Auto on the Desktop Head Unit: tabs, playing from "Last search", the queue, and recents updating live (assembled from screenshots, so it is choppy) |
+Screenshots from the Android emulator, a Wear OS emulator and the Android Auto Desktop Head
+Unit. All of them are in [`docs/demo/screenshots/`](docs/demo/screenshots).
 
 **Phone**
 
@@ -50,9 +50,13 @@ recordings.
 |---|---|---|---|
 | <img src="docs/demo/screenshots/phone-01-home-empty.png" width="180"> | <img src="docs/demo/screenshots/phone-02-search-results.png" width="180"> | <img src="docs/demo/screenshots/phone-03-player.png" width="180"> | <img src="docs/demo/screenshots/phone-04-more-options.png" width="180"> |
 
-| Album | Recently played | Offline |
-|---|---|---|
-| <img src="docs/demo/screenshots/phone-05-album.png" width="180"> | <img src="docs/demo/screenshots/phone-06-recently-played.png" width="180"> | <img src="docs/demo/screenshots/phone-07-offline.png" width="180"> |
+| Sound wave | Mini player | Album | Recently played |
+|---|---|---|---|
+| <img src="docs/demo/screenshots/phone-08-sound-wave.png" width="180"> | <img src="docs/demo/screenshots/phone-09-mini-player.png" width="180"> | <img src="docs/demo/screenshots/phone-05-album.png" width="180"> | <img src="docs/demo/screenshots/phone-06-recently-played.png" width="180"> |
+
+| Offline |
+|---|
+| <img src="docs/demo/screenshots/phone-07-offline.png" width="180"> |
 
 **Wear OS**
 
@@ -70,13 +74,20 @@ recordings.
 
 ## Architecture
 
-```
-androidApp ─┐                 ┌─ feature:library:presentation  (MVI ViewModels + Compose screens)
-iosApp ─────┼─ shared ────────┼─ feature:library:data          (Room, Ktor, Paging RemoteMediator)
-            │  (DI, navigation)└─ feature:library:domain        (models, repository interfaces)
-wearApp ────┘   reuses the feature modules with its own Wear UI
-core:  domain · data · presentation · designsystem · playback · testing
-```
+<img src="docs/architecture.svg" alt="Module diagram: the phone and iPhone apps use :shared, which wires the library feature; the feature has presentation (MVI), domain and data layers on top of the core modules; playback lives in :core:playback and serves the app, the notification and Android Auto; Room is the single source of truth, filled from the iTunes API." width="100%">
+
+How to read it, top to bottom:
+
+1. **Apps** are thin. The phone and iPhone apps only start `:shared`. The watch has its own Wear
+   UI on top of the same feature code. Android Auto has no code of its own: it talks to the
+   playback service.
+2. **`:shared`** builds the dependency graph (Koin) and the navigation back stack.
+3. **`:feature:library`** holds the product, split in three layers. Presentation depends on domain,
+   data implements domain, and domain depends on nothing.
+4. **`:core:*`** holds what any feature can reuse: the `Result` type, the HTTP client, error
+   messages, the design system and the player.
+5. **Data sources:** the screens only read Room. The iTunes API writes into Room, never straight
+   to the screen.
 
 - **MVI** in the presentation layer: each screen has one immutable `State`, a sealed `Action`
   as the only input, and a `Root`/`Screen` split so screens render without a ViewModel.
@@ -100,7 +111,7 @@ More detail:
 ## How it was built
 
 The project started from my own Kotlin Multiplatform skeleton: modules, convention plugins,
-architecture rules and CI. I built it with Claude Code as a pair programmer, in six stages. Each
+architecture rules and CI. I built it with Claude Code as a pair programmer, in seven stages. Each
 stage ended with the full check suite green and one Conventional Commit per subject.
 
 1. **Base:** rename the skeleton, apply the dark design tokens measured from the Figma design, and replace the sample features with the `library` and `playback` modules.
@@ -109,6 +120,7 @@ stage ended with the full check suite green and one Conventional Commit per subj
 4. **Player and album:** the Media3 and AVPlayer players, the Player and Album screens, splash, launcher icon, background audio and image loading.
 5. **Android Auto and Wear OS:** browsing and voice search in the car, live refresh of its tabs, and the standalone watch app.
 6. **Wrap-up:** accessibility, the shared-element transition, ADRs, this README, CI and the demo recordings.
+7. **Player polish:** the mini player, opening the current song without restarting it, faster screen transitions, and the sound wave page.
 
 Each stage shipped with tests for what it built. A stage only counted as done when these passed:
 
@@ -174,7 +186,8 @@ the rest were followed while building the features.
 | Convention plugins and module rules | [`build-logic/`](build-logic) |
 | Architecture guide (Portuguese) | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Decision records | [`docs/decisions/`](docs/decisions/index.md) |
-| Demo videos and screenshots | [`docs/demo/`](docs/demo) |
+| Demo screenshots | [`docs/demo/screenshots/`](docs/demo/screenshots) |
+| Architecture diagram | [`docs/architecture.svg`](docs/architecture.svg) |
 | CI | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) |
 | Agent working rules | [`CLAUDE.md`](CLAUDE.md) |
 
