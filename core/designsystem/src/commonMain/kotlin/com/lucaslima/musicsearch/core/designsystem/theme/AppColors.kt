@@ -6,52 +6,41 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Cores do tema estendido. Leia por [AppTheme.colors]; nunca instancie fora deste módulo.
- * Placeholder do esqueleto: trocar pelos tokens do design do projeto.
+ * Valores medidos no Figma do desafio, que só tem tema escuro.
  */
 @Immutable
 data class AppColors(
     /** Fundo da tela. */
     val bg: Color,
-    /** Texto primário e fundo do botão principal. */
+    /** Texto primário, ícones e elementos ativos (thumb e trilha tocada do slider). */
     val ink: Color,
     /** Conteúdo sobre [ink]. */
     val onInk: Color,
-    /** Texto secundário e legendas. */
+    /** Texto secundário: artista, tempo, legendas. */
     val muted: Color,
-    /** Destaque: ações e elementos ativos. */
-    val accent: Color,
-    /** Conteúdo sobre [accent]. */
-    val onAccent: Color,
-    /** Fundo de card sobre [bg]. */
-    val card: Color,
-    /** Divisores e bordas finas. */
+    /** Campo de busca e placeholders de capa. */
+    val field: Color,
+    /** Fundo do bottom sheet. */
+    val sheet: Color,
+    /** Botão de play circular. */
+    val control: Color,
+    /** Trilha do slider ainda não tocada, divisores e o puxador do sheet. */
     val line: Color,
-)
-
-private val Accent = Color(0xFF7B5CFF)
-private val Ink = Color(0xFF0D0D0D)
-
-internal val LightAppColors = AppColors(
-    bg = Color(0xFFF5F5F3),
-    ink = Ink,
-    onInk = Color.White,
-    muted = Color(0xFF6E6E72),
-    accent = Accent,
-    onAccent = Color.White,
-    card = Color.White,
-    line = Color(0xFFE4E4E2),
+    /** Degradê da splash: do canto superior até o [bg]. */
+    val splashTop: Color,
 )
 
 internal val DarkAppColors = AppColors(
-    bg = Ink,
-    ink = Color(0xFFF5F5F3),
-    onInk = Ink,
-    muted = Color(0xFFA8A8AC),
-    accent = Accent,
-    onAccent = Color.White,
-    card = Color(0xFF1A1A1C),
-    line = Color(0xFF2A2A2D),
+    bg = Color(0xFF000000),
+    ink = Color(0xFFFFFFFF),
+    onInk = Color(0xFF000000),
+    muted = Color(0xFF8A8A8A),
+    field = Color(0xFF1A1A1A),
+    sheet = Color(0xFF2C2C2C),
+    control = Color(0xFF333333),
+    line = Color(0xFF3F3F3F),
+    splashTop = Color(0xFF0F3440),
 )
 
 // Exceção à regra de CompositionLocal: liberada no suppressLintsFor do build.gradle.kts raiz.
-internal val LocalAppColors = staticCompositionLocalOf { LightAppColors }
+internal val LocalAppColors = staticCompositionLocalOf { DarkAppColors }

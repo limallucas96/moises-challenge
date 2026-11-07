@@ -9,17 +9,25 @@ import androidx.compose.ui.unit.sp
 
 /**
  * Estilos de texto do tema estendido. Leia por [AppTheme.typography].
- * Placeholder do esqueleto: usa a fonte do sistema até a fonte do projeto entrar.
+ * Fonte do sistema (Roboto no Android, SF no iOS), próxima da usada no Figma.
  */
 @Immutable
 data class AppTypography(
-    /** Título de tela: 32, 800. */
+    /** Título de tela ("Songs", título do álbum): 22, 600. */
     val screenTitle: TextStyle,
-    /** Texto corrido: 16/24, 400. */
+    /** Título da barra superior ("Now playing"): 16, 500. */
+    val topBarTitle: TextStyle,
+    /** Título da música no player: 28, 600. */
+    val playerTitle: TextStyle,
+    /** Linha principal de um item de lista: 16, 400. */
+    val itemTitle: TextStyle,
+    /** Linha secundária de um item de lista: 12, 400. */
+    val itemSubtitle: TextStyle,
+    /** Texto corrido e artista no player: 14/20, 400. */
     val body: TextStyle,
-    /** Texto de botão: 16, 700. */
+    /** Texto de botão e ação do sheet: 16, 500. */
     val button: TextStyle,
-    /** Legenda e texto secundário: 13, 500. */
+    /** Legenda e tempo do slider: 12, 400. */
     val caption: TextStyle,
 )
 
@@ -29,10 +37,14 @@ internal fun appTypography(fontFamily: FontFamily = FontFamily.Default): AppTypo
         weight: FontWeight,
     ) = TextStyle(fontFamily = fontFamily, fontSize = size.sp, fontWeight = weight)
     return AppTypography(
-        screenTitle = style(32, FontWeight.ExtraBold).copy(letterSpacing = (-1.2).sp),
-        body = style(16, FontWeight.Normal).copy(lineHeight = 24.sp),
-        button = style(16, FontWeight.Bold),
-        caption = style(13, FontWeight.Medium),
+        screenTitle = style(22, FontWeight.SemiBold),
+        topBarTitle = style(16, FontWeight.Medium),
+        playerTitle = style(28, FontWeight.SemiBold),
+        itemTitle = style(16, FontWeight.Normal),
+        itemSubtitle = style(12, FontWeight.Normal),
+        body = style(14, FontWeight.Normal).copy(lineHeight = 20.sp),
+        button = style(16, FontWeight.Medium),
+        caption = style(12, FontWeight.Normal),
     )
 }
 
