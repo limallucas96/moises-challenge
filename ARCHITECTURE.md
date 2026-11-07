@@ -200,6 +200,14 @@ nem `ObserveAsEvents`.
    O callback que empilha tela confere o topo da pilha (`if (backStack.lastOrNull() is AlphaKey)`):
    um segundo toque durante a transição não empilha a tela duas vezes.
 
+   **Elemento compartilhado entre telas.** O `:shared` põe o `NavDisplay` dentro de um
+   `SharedTransitionLayout` e passa o `SharedTransitionScope` para as entradas da feature
+   (`libraryEntries(sharedTransitionScope = ...)`). A feature junta esse escopo com o
+   `LocalNavAnimatedContentScope` da entrada num `ArtworkTransition` e o desce por parâmetro até a
+   capa (`Modifier.sharedArtwork`). Por parâmetro, não por `CompositionLocal`: o ktlint só aceita os
+   dois do design system. Nulo por padrão, então previews e testes de uma tela só desenham sem a
+   transição.
+
 2. **Porta + adapter.** Quem precisa declara a interface; quem sabe responder implementa.
    - `:core:data` declara `AuthTokenProvider`; a feature de auth (quando existir) implementa e
      registra no Koin. O Ktor ganha o Bearer token sem a camada de rede saber o que é login.

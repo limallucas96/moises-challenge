@@ -45,10 +45,12 @@ import com.lucaslima.musicsearch.feature.library.domain.PlayerState
 import com.lucaslima.musicsearch.feature.library.domain.RepeatMode
 import com.lucaslima.musicsearch.feature.library.domain.Song
 import com.lucaslima.musicsearch.feature.library.presentation.components.Artwork
+import com.lucaslima.musicsearch.feature.library.presentation.components.ArtworkTransition
 import com.lucaslima.musicsearch.feature.library.presentation.components.BackTopBar
 import com.lucaslima.musicsearch.feature.library.presentation.components.SongOptionsSheet
 import com.lucaslima.musicsearch.feature.library.presentation.components.StateMessage
 import com.lucaslima.musicsearch.feature.library.presentation.components.previewSong
+import com.lucaslima.musicsearch.feature.library.presentation.components.sharedArtwork
 import com.lucaslima.musicsearch.feature.library.presentation.components.toClock
 import com.lucaslima.musicsearch.feature.library.presentation.resources.Res
 import com.lucaslima.musicsearch.feature.library.presentation.resources.next
@@ -75,6 +77,7 @@ import org.koin.compose.viewmodel.koinViewModel
 internal fun NowPlayingRoot(
     onBackClick: () -> Unit,
     onOpenAlbum: (albumId: Long) -> Unit,
+    artworkTransition: ArtworkTransition?,
     viewModel: NowPlayingViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -88,6 +91,7 @@ internal fun NowPlayingRoot(
             }
             viewModel.onAction(action)
         },
+        artworkTransition = artworkTransition,
     )
 }
 
@@ -97,6 +101,7 @@ internal fun NowPlayingScreen(
     state: NowPlayingState,
     onAction: (NowPlayingAction) -> Unit,
     modifier: Modifier = Modifier,
+    artworkTransition: ArtworkTransition? = null,
 ) {
     Column(
         modifier = modifier
@@ -128,7 +133,13 @@ internal fun NowPlayingScreen(
                 modifier = Modifier.weight(1f).padding(top = Spacing.xl),
             )
         } else {
-            NowPlayingContent(song = song, state = state, onAction = onAction, modifier = Modifier.weight(1f))
+            NowPlayingContent(
+                song = song,
+                state = state,
+                onAction = onAction,
+                artworkTransition = artworkTransition,
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 
@@ -147,6 +158,7 @@ private fun NowPlayingContent(
     song: Song,
     state: NowPlayingState,
     onAction: (NowPlayingAction) -> Unit,
+    artworkTransition: ArtworkTransition?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.padding(horizontal = Spacing.lg)) {
@@ -160,6 +172,7 @@ private fun NowPlayingContent(
                 url = song.artworkUrl,
                 cornerRadius = Radius.artworkLarge,
                 modifier = Modifier
+                    .sharedArtwork(artworkTransition, song.id)
                     .fillMaxWidth(ARTWORK_WIDTH_FRACTION)
                     .widthIn(max = ARTWORK_MAX_WIDTH)
                     .aspectRatio(1f),

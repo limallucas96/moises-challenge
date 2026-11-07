@@ -55,6 +55,7 @@ import com.lucaslima.musicsearch.core.domain.DataError
 import com.lucaslima.musicsearch.core.domain.DataErrorException
 import com.lucaslima.musicsearch.core.presentation.toUiText
 import com.lucaslima.musicsearch.feature.library.domain.Song
+import com.lucaslima.musicsearch.feature.library.presentation.components.ArtworkTransition
 import com.lucaslima.musicsearch.feature.library.presentation.components.SearchField
 import com.lucaslima.musicsearch.feature.library.presentation.components.SongOptionsSheet
 import com.lucaslima.musicsearch.feature.library.presentation.components.SongRow
@@ -85,6 +86,7 @@ import org.koin.compose.viewmodel.koinViewModel
 internal fun SongsRoot(
     onOpenPlayer: () -> Unit,
     onOpenAlbum: (albumId: Long) -> Unit,
+    artworkTransition: ArtworkTransition?,
     viewModel: SongsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -100,6 +102,7 @@ internal fun SongsRoot(
             }
             viewModel.onAction(action)
         },
+        artworkTransition = artworkTransition,
     )
 }
 
@@ -115,6 +118,7 @@ internal fun SongsScreen(
     songs: LazyPagingItems<Song>,
     onAction: (SongsAction) -> Unit,
     modifier: Modifier = Modifier,
+    artworkTransition: ArtworkTransition? = null,
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -153,9 +157,14 @@ internal fun SongsScreen(
                     )
                 }
                 if (state.isSearching) {
-                    searchResults(state = state, songs = songs, onAction = onAction)
+                    searchResults(
+                        state = state,
+                        songs = songs,
+                        onAction = onAction,
+                        artworkTransition = artworkTransition,
+                    )
                 } else {
-                    recentlyPlayed(state = state, onAction = onAction)
+                    recentlyPlayed(state = state, onAction = onAction, artworkTransition = artworkTransition)
                 }
             }
         }
@@ -206,6 +215,7 @@ private fun SongsTopBar(
 private fun LazyListScope.recentlyPlayed(
     state: SongsState,
     onAction: (SongsAction) -> Unit,
+    artworkTransition: ArtworkTransition?,
 ) {
     when {
         // Antes da primeira leitura do banco não mostra nada: evita piscar o vazio.
@@ -231,6 +241,7 @@ private fun LazyListScope.recentlyPlayed(
                     onClick = { onAction(SongsAction.OnSongClick(song, state.recentlyPlayed)) },
                     onMoreClick = { onAction(SongsAction.OnMoreClick(song)) },
                     modifier = Modifier.animateItem(),
+                    artworkTransition = artworkTransition,
                 )
             }
         }
@@ -241,6 +252,7 @@ private fun LazyListScope.searchResults(
     state: SongsState,
     songs: LazyPagingItems<Song>,
     onAction: (SongsAction) -> Unit,
+    artworkTransition: ArtworkTransition?,
 ) {
     val refresh = songs.loadState.refresh
     val refreshError = (refresh as? LoadState.Error)?.toDataError()
@@ -286,6 +298,7 @@ private fun LazyListScope.searchResults(
             isPlaying = song.id == state.playingSongId,
             onClick = { onAction(SongsAction.OnSongClick(song, songs.itemSnapshotList.items)) },
             onMoreClick = { onAction(SongsAction.OnMoreClick(song)) },
+            artworkTransition = artworkTransition,
         )
     }
 

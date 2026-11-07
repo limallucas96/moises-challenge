@@ -53,6 +53,7 @@ internal fun SongRow(
     onMoreClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     showArtwork: Boolean = true,
+    artworkTransition: ArtworkTransition? = null,
 ) {
     val isPlayable = song.previewUrl != null
     val nowPlaying = stringResource(Res.string.song_now_playing)
@@ -83,7 +84,12 @@ internal fun SongRow(
             horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             if (showArtwork) {
-                Artwork(url = song.artworkUrl, size = Sizes.artworkSmall, cornerRadius = Radius.artworkSmall)
+                Artwork(
+                    url = song.artworkUrl,
+                    size = Sizes.artworkSmall,
+                    cornerRadius = Radius.artworkSmall,
+                    modifier = Modifier.sharedArtwork(artworkTransition, song.id),
+                )
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(

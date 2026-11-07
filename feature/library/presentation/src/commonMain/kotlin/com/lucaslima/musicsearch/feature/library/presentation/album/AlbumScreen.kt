@@ -32,6 +32,7 @@ import com.lucaslima.musicsearch.core.designsystem.theme.Spacing
 import com.lucaslima.musicsearch.core.presentation.toUiText
 import com.lucaslima.musicsearch.feature.library.domain.Album
 import com.lucaslima.musicsearch.feature.library.presentation.components.Artwork
+import com.lucaslima.musicsearch.feature.library.presentation.components.ArtworkTransition
 import com.lucaslima.musicsearch.feature.library.presentation.components.BackTopBar
 import com.lucaslima.musicsearch.feature.library.presentation.components.SongRow
 import com.lucaslima.musicsearch.feature.library.presentation.components.StateMessage
@@ -49,6 +50,7 @@ internal fun AlbumRoot(
     albumId: Long,
     onBackClick: () -> Unit,
     onOpenPlayer: () -> Unit,
+    artworkTransition: ArtworkTransition?,
     viewModel: AlbumViewModel = koinViewModel { parametersOf(albumId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -62,6 +64,7 @@ internal fun AlbumRoot(
             }
             viewModel.onAction(action)
         },
+        artworkTransition = artworkTransition,
     )
 }
 
@@ -71,6 +74,7 @@ internal fun AlbumScreen(
     state: AlbumState,
     onAction: (AlbumAction) -> Unit,
     modifier: Modifier = Modifier,
+    artworkTransition: ArtworkTransition? = null,
 ) {
     val album = state.album
     Column(
@@ -84,7 +88,12 @@ internal fun AlbumScreen(
             onBackClick = { onAction(AlbumAction.OnBackClick) },
         )
         when {
-            album != null -> AlbumContent(album = album, state = state, onAction = onAction)
+            album != null -> AlbumContent(
+                album = album,
+                state = state,
+                onAction = onAction,
+                artworkTransition = artworkTransition,
+            )
 
             state.error != null -> StateMessage(
                 icon = AppIcons.CloudOff,
@@ -105,6 +114,7 @@ private fun AlbumContent(
     album: Album,
     state: AlbumState,
     onAction: (AlbumAction) -> Unit,
+    artworkTransition: ArtworkTransition?,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
@@ -118,6 +128,7 @@ private fun AlbumContent(
                 isPlaying = song.id == state.playingSongId,
                 onClick = { onAction(AlbumAction.OnSongClick(song)) },
                 onMoreClick = null,
+                artworkTransition = artworkTransition,
             )
         }
     }
