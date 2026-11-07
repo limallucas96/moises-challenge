@@ -70,7 +70,7 @@ internal abstract class SongDao {
         LIMIT :limit
         """,
     )
-    abstract suspend fun latestSearchResults(limit: Int): List<SongEntity>
+    abstract fun observeLatestSearchResults(limit: Int): Flow<List<SongEntity>>
 
     // --- Recentes ---
 

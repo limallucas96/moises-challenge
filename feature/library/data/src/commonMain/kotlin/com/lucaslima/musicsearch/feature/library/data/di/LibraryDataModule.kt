@@ -39,7 +39,9 @@ val libraryDataModule = module {
     singleOf(::KnownSongs)
     single<MediaCatalog> { LibraryMediaCatalog(remote = get(), local = get(), knownSongs = get(), clock = get()) }
 
-    single<PlayerController> {
+    // Criado junto com o Koin, não na primeira tela: é ele que grava os recentes, e no Android
+    // Auto a música toca sem nenhuma tela do app aberta.
+    single<PlayerController>(createdAtStart = true) {
         MediaPlayerController(
             audioPlayer = get(),
             local = get(),

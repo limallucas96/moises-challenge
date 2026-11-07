@@ -4,6 +4,7 @@ import android.content.ComponentName
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaBrowser
+import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.SessionToken
 import androidx.test.platform.app.InstrumentationRegistry
 import assertk.assertThat
@@ -18,6 +19,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -31,12 +34,30 @@ class PlaybackServiceDeviceTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private lateinit var browser: MediaBrowser
+    private val catalog = FakeMediaCatalog()
+    private val changedParents = mutableListOf<String>()
+
+    /** O Media3 já avisa uma vez ao assinar; a segunda é a que o catálogo disparou. */
+    private val subscribed = CountDownLatch(1)
+    private val childrenChanged = CountDownLatch(2)
 
     @BeforeTest
     fun setUp() {
-        startKoin { modules(module { single<MediaCatalog> { FakeMediaCatalog() } }) }
+        startKoin { modules(module { single<MediaCatalog> { catalog } }) }
         val token = SessionToken(context, ComponentName(context, PlaybackService::class.java))
-        browser = onMain { MediaBrowser.Builder(context, token).buildAsync() }.await().await()
+        val listener = object : MediaBrowser.Listener {
+            override fun onChildrenChanged(
+                browser: MediaBrowser,
+                parentId: String,
+                itemCount: Int,
+                params: MediaLibraryService.LibraryParams?,
+            ) {
+                changedParents += parentId
+                subscribed.countDown()
+                childrenChanged.countDown()
+            }
+        }
+        browser = onMain { MediaBrowser.Builder(context, token).setListener(listener).buildAsync() }.await().await()
     }
 
     @AfterTest
@@ -104,6 +125,17 @@ class PlaybackServiceDeviceTest {
         assertThat(onMain { browser.playlistMetadata.title.toString() }.await()).isEqualTo("daft")
     }
 
+    @Test
+    fun secao_que_muda_avisa_quem_assinou() {
+        onMain { browser.subscribe("section|recent", null) }.await().await()
+        assertThat(subscribed.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
+
+        catalog.changes.tryEmit("recent")
+
+        assertThat(childrenChanged.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
+        assertThat(onMain { changedParents.toList() }.await()).containsExactly("section|recent", "section|recent")
+    }
+
     private fun children(sectionId: String): List<MediaItem> =
         onMain { browser.getChildren("section|$sectionId", 0, 50, null) }.await().await().value!!
 
@@ -142,6 +174,11 @@ class PlaybackServiceDeviceTest {
 }
 
 private class FakeMediaCatalog : MediaCatalog {
+    /** O teste emite aqui para simular uma seção que mudou. */
+    val changes = MutableSharedFlow<String>(extraBufferCapacity = 1)
+
+    override fun sectionChanges(): Flow<String> = changes
+
     private val recent = listOf(item(1, "One More Time"), item(2, "Aerodynamic"))
 
     override fun sections() = listOf(

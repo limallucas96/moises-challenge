@@ -12,7 +12,10 @@ import com.lucaslima.musicsearch.feature.library.data.repository.toQueryKey
 import com.lucaslima.musicsearch.feature.library.domain.Song
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 /**
  * O catálogo da biblioteca para quem toca de fora do app (Android Auto, voz). Lê o banco
@@ -37,11 +40,16 @@ internal class LibraryMediaCatalog(
     override suspend fun items(sectionId: String): List<PlayableItem> {
         val songs = when (sectionId) {
             RECENT -> local.observeRecentlyPlayed(limit).first()
-            LAST_SEARCH -> local.latestSearchResults(limit)
+            LAST_SEARCH -> local.observeLatestSearchResults(limit).first()
             else -> emptyList()
         }
         return songs.toPlayable()
     }
+
+    override fun sectionChanges(): Flow<String> = merge(
+        local.observeRecentlyPlayed(limit).map { RECENT },
+        local.observeLatestSearchResults(limit).map { LAST_SEARCH },
+    )
 
     override suspend fun search(query: String): List<PlayableItem> {
         val term = query.trim()

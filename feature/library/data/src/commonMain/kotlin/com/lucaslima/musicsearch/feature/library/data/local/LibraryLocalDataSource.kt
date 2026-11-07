@@ -30,8 +30,8 @@ internal interface LibraryLocalDataSource {
 
     fun observeRecentlyPlayed(limit: Int): Flow<List<Song>>
 
-    /** Resultados salvos da busca feita por último, na ordem da busca. */
-    suspend fun latestSearchResults(limit: Int): List<Song>
+    /** Resultados salvos da busca feita por último, na ordem da busca. Emite de novo a cada busca salva. */
+    fun observeLatestSearchResults(limit: Int): Flow<List<Song>>
 
     suspend fun markPlayed(
         song: Song,

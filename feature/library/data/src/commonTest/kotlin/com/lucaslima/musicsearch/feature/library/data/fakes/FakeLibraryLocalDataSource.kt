@@ -18,6 +18,9 @@ internal class FakeLibraryLocalDataSource : LibraryLocalDataSource {
 
     val searchResults = mutableMapOf<String, List<Song>>()
     val searchPages = mutableMapOf<String, SearchPageEntity>()
+
+    /** Conta as buscas salvas: faz o fluxo da última busca emitir de novo, como o Room. */
+    private val searchSaves = MutableStateFlow(0)
     private val recents = MutableStateFlow<List<Pair<Song, Instant>>>(emptyList())
     private val albums = MutableStateFlow<Map<Long, Album>>(emptyMap())
     private val sources = mutableListOf<PagingSource<Int, SongEntity>>()
@@ -43,6 +46,7 @@ internal class FakeLibraryLocalDataSource : LibraryLocalDataSource {
         val previous = if (replace) emptyList() else searchResults[queryKey].orEmpty()
         searchResults[queryKey] = previous + songs
         searchPages[queryKey] = SearchPageEntity(queryKey, nextPage, updatedAt.toEpochMilliseconds())
+        searchSaves.value++
         sources.forEach { it.invalidate() }
         sources.clear()
     }
@@ -50,9 +54,9 @@ internal class FakeLibraryLocalDataSource : LibraryLocalDataSource {
     override fun observeRecentlyPlayed(limit: Int): Flow<List<Song>> =
         recents.map { entries -> entries.sortedByDescending { it.second }.take(limit).map { it.first } }
 
-    override suspend fun latestSearchResults(limit: Int): List<Song> {
-        val latest = searchPages.values.maxByOrNull { it.updatedAtMillis } ?: return emptyList()
-        return searchResults[latest.queryKey].orEmpty().take(limit)
+    override fun observeLatestSearchResults(limit: Int): Flow<List<Song>> = searchSaves.map {
+        val latest = searchPages.values.maxByOrNull { it.updatedAtMillis }
+        latest?.let { searchResults[it.queryKey].orEmpty().take(limit) }.orEmpty()
     }
 
     override suspend fun markPlayed(

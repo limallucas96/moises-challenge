@@ -52,9 +52,16 @@ class PlaybackService :
             // Fone desconectado: pausa em vez de tocar no alto-falante.
             .setHandleAudioBecomingNoisy(true)
             .build()
-        session = MediaLibrarySession.Builder(this, player, LibraryCallback())
+        val librarySession = MediaLibrarySession.Builder(this, player, LibraryCallback())
             .apply { launchAppIntent()?.let(::setSessionActivity) }
             .build()
+        session = librarySession
+        // Tocou uma música ou buscou: o Auto recarrega a seção que mudou.
+        scope.launch {
+            tree.sectionChanges().collect { parentId ->
+                librarySession.notifyChildrenChanged(parentId, tree.children(parentId).size, null)
+            }
+        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? = session

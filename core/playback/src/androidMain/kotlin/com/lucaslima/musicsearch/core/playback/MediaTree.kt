@@ -2,6 +2,9 @@ package com.lucaslima.musicsearch.core.playback
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 
 /**
  * A árvore que o Android Auto navega: raiz, uma pasta por seção do [MediaCatalog] e as músicas
@@ -19,6 +22,9 @@ internal class MediaTree(private val catalog: MediaCatalog?) {
 
     fun sections(): List<MediaItem> =
         catalog?.sections().orEmpty().map { folder(id = sectionId(it.id), title = it.title) }
+
+    /** O id do nó de cada seção que mudou, para avisar quem está navegando. */
+    fun sectionChanges(): Flow<String> = catalog?.sectionChanges()?.map { sectionId(it) } ?: emptyFlow()
 
     suspend fun children(parentId: String): List<MediaItem> = when {
         parentId == ROOT_ID -> sections()

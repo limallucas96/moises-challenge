@@ -32,9 +32,9 @@ internal class RoomLibraryDataSource(private val dao: SongDao) : LibraryLocalDat
         .map { songs -> songs.map { it.toSong() } }
         .distinctUntilChanged()
 
-    override suspend fun latestSearchResults(limit: Int): List<Song> = dao.latestSearchResults(limit).map {
-        it.toSong()
-    }
+    override fun observeLatestSearchResults(limit: Int): Flow<List<Song>> = dao.observeLatestSearchResults(limit)
+        .map { songs -> songs.map { it.toSong() } }
+        .distinctUntilChanged()
 
     override suspend fun markPlayed(
         song: Song,

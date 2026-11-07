@@ -1,7 +1,9 @@
 package com.lucaslima.musicsearch.feature.library.data.catalog
 
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import com.lucaslima.musicsearch.core.domain.DataError
@@ -98,6 +100,25 @@ class LibraryMediaCatalogTest {
 
         assertThat(knownSongs.songs.value.keys.toList()).containsExactly("1")
         assertThat(knownSongs.songs.value["1"]).isEqualTo(song(1))
+    }
+
+    @Test
+    fun tocar_e_buscar_avisam_a_secao_que_mudou() = runTest {
+        remote.catalog = listOf(song(1))
+
+        catalog.sectionChanges().test {
+            // Uma emissão inicial por seção, ao assinar.
+            assertThat(listOf(awaitItem(), awaitItem())).containsExactlyInAnyOrder(
+                LibraryMediaCatalog.RECENT,
+                LibraryMediaCatalog.LAST_SEARCH,
+            )
+
+            local.markPlayed(song(1), clock.now())
+            assertThat(awaitItem()).isEqualTo(LibraryMediaCatalog.RECENT)
+
+            catalog.search("daft")
+            assertThat(awaitItem()).isEqualTo(LibraryMediaCatalog.LAST_SEARCH)
+        }
     }
 
     @Test
