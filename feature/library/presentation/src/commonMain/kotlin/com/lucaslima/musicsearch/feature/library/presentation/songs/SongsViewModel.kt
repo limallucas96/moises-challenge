@@ -46,10 +46,11 @@ class SongsViewModel(
         songRepository.recentlyPlayed()
             .onEach { songs -> _state.update { it.copy(recentlyPlayed = songs, isRecentlyPlayedLoaded = true) } }
             .launchIn(viewModelScope)
+        // Só música e play/pause: a posição muda o tempo todo e a Home não a mostra.
         playerController.state
-            .map { it.song?.id }
+            .map { it.song to it.isPlaying }
             .distinctUntilChanged()
-            .onEach { id -> _state.update { it.copy(playingSongId = id) } }
+            .onEach { (song, isPlaying) -> _state.update { it.copy(nowPlaying = song, isPlaying = isPlaying) } }
             .launchIn(viewModelScope)
     }
 
@@ -68,6 +69,11 @@ class SongsViewModel(
                     playerController.play(listOf(action.song), 0)
                 }
             }
+
+            SongsAction.OnMiniPlayerPlayPauseClick -> playerController.togglePlayPause()
+
+            // A navegação para o player é do Root.
+            SongsAction.OnMiniPlayerClick -> Unit
 
             is SongsAction.OnMoreClick -> _state.update { it.copy(optionsSong = action.song) }
 

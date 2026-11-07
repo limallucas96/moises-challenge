@@ -25,6 +25,7 @@
     <string name="now_playing_error">Couldn’t play this song. Check your connection and tap play to try again.</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
+    <string name="mini_player_open">Open player</string>
     <string name="next">Next song</string>
     <string name="previous">Previous song</string>
     <string name="repeat_off">Repeat off</string>

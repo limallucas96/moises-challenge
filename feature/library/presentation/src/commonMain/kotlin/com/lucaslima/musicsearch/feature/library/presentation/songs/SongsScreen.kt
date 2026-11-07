@@ -3,10 +3,13 @@ package com.lucaslima.musicsearch.feature.library.presentation.songs
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,8 +33,10 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -58,6 +63,7 @@ import com.lucaslima.musicsearch.core.domain.DataErrorException
 import com.lucaslima.musicsearch.core.presentation.toUiText
 import com.lucaslima.musicsearch.feature.library.domain.Song
 import com.lucaslima.musicsearch.feature.library.presentation.components.ArtworkTransition
+import com.lucaslima.musicsearch.feature.library.presentation.components.MiniPlayer
 import com.lucaslima.musicsearch.feature.library.presentation.components.SearchField
 import com.lucaslima.musicsearch.feature.library.presentation.components.SongOptionsSheet
 import com.lucaslima.musicsearch.feature.library.presentation.components.SongRow
@@ -98,7 +104,7 @@ internal fun SongsRoot(
         songs = songs,
         onAction = { action ->
             when (action) {
-                is SongsAction.OnSongClick -> onOpenPlayer()
+                is SongsAction.OnSongClick, SongsAction.OnMiniPlayerClick -> onOpenPlayer()
                 is SongsAction.OnViewAlbumClick -> onOpenAlbum(action.song.albumId)
                 else -> Unit
             }
@@ -142,33 +148,46 @@ internal fun SongsScreen(
                 }
             },
         )
-        PullToRefreshBox(
-            isRefreshing = state.isSearching && songs.isRefreshingWithContent(),
-            onRefresh = { if (state.isSearching) songs.refresh() },
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                item(key = "search", contentType = "search") {
-                    SearchField(
-                        query = state.query,
-                        onQueryChange = { onAction(SongsAction.OnQueryChange(it)) },
-                        onClearClick = { onAction(SongsAction.OnClearQueryClick) },
-                        modifier = Modifier
-                            .padding(horizontal = Spacing.md, vertical = Spacing.sm)
-                            .focusRequester(searchFocus),
-                    )
-                }
-                if (state.isSearching) {
-                    searchResults(
-                        state = state,
-                        songs = songs,
-                        onAction = onAction,
-                        artworkTransition = artworkTransition,
-                    )
-                } else {
-                    recentlyPlayed(state = state, onAction = onAction, artworkTransition = artworkTransition)
+        Box(modifier = Modifier.fillMaxSize()) {
+            PullToRefreshBox(
+                isRefreshing = state.isSearching && songs.isRefreshingWithContent(),
+                onRefresh = { if (state.isSearching) songs.refresh() },
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                LazyColumn(
+                    state = listState,
+                    // Com o mini player na tela, a última linha ainda rola para cima dele.
+                    contentPadding = PaddingValues(bottom = if (state.nowPlaying != null) MINI_PLAYER_SPACE else 0.dp),
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    item(key = "search", contentType = "search") {
+                        SearchField(
+                            query = state.query,
+                            onQueryChange = { onAction(SongsAction.OnQueryChange(it)) },
+                            onClearClick = { onAction(SongsAction.OnClearQueryClick) },
+                            modifier = Modifier
+                                .padding(horizontal = Spacing.md, vertical = Spacing.sm)
+                                .focusRequester(searchFocus),
+                        )
+                    }
+                    if (state.isSearching) {
+                        searchResults(
+                            state = state,
+                            songs = songs,
+                            onAction = onAction,
+                            artworkTransition = artworkTransition,
+                        )
+                    } else {
+                        recentlyPlayed(state = state, onAction = onAction, artworkTransition = artworkTransition)
+                    }
                 }
             }
+            MiniPlayerBar(
+                song = state.nowPlaying,
+                isPlaying = state.isPlaying,
+                onAction = onAction,
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
         }
     }
 
@@ -178,6 +197,35 @@ internal fun SongsScreen(
             onViewAlbumClick = { onAction(SongsAction.OnViewAlbumClick(song)) },
             onDismiss = { onAction(SongsAction.OnOptionsDismiss) },
         )
+    }
+}
+
+/** O mini player entra deslizando de baixo quando há música e sai do mesmo jeito. */
+@Composable
+private fun MiniPlayerBar(
+    song: Song?,
+    isPlaying: Boolean,
+    onAction: (SongsAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Guarda a última música para a barra sair animada em vez de sumir de uma vez.
+    var lastSong by remember { mutableStateOf(song) }
+    if (song != null) lastSong = song
+    AnimatedVisibility(
+        visible = song != null,
+        enter = slideInVertically { it } + fadeIn(),
+        exit = slideOutVertically { it } + fadeOut(),
+        modifier = modifier,
+    ) {
+        lastSong?.let { shown ->
+            MiniPlayer(
+                song = shown,
+                isPlaying = isPlaying,
+                onClick = { onAction(SongsAction.OnMiniPlayerClick) },
+                onPlayPauseClick = { onAction(SongsAction.OnMiniPlayerPlayPauseClick) },
+                modifier = Modifier.padding(Spacing.sm),
+            )
+        }
     }
 }
 
@@ -413,7 +461,8 @@ private fun SongsScreenRecentsPreview() {
             state = SongsState(
                 recentlyPlayed = listOf(previewSong(1), previewSong(2, title = "Instant Crush")),
                 isRecentlyPlayedLoaded = true,
-                playingSongId = 1,
+                nowPlaying = previewSong(1),
+                isPlaying = true,
             ),
             songs = flowOf(PagingData.empty<Song>()).collectAsLazyPagingItems(),
             onAction = {},
@@ -445,3 +494,6 @@ private fun SongsScreenResultsPreview() {
         )
     }
 }
+
+/** Altura do mini player (capa + respiro) mais a margem, reservada no fim da lista. */
+private val MINI_PLAYER_SPACE = 80.dp
