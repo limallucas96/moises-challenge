@@ -36,8 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -360,7 +362,10 @@ private fun OfflineBanner(
             text = stringResource(Res.string.search_offline_banner),
             style = AppTheme.typography.caption,
             color = AppTheme.colors.muted,
-            modifier = Modifier.weight(1f),
+            // Anuncia a queda de rede sem tirar o foco de onde a pessoa está.
+            modifier = Modifier
+                .weight(1f)
+                .semantics { liveRegion = LiveRegionMode.Polite },
         )
         TextButton(onClick = onRetryClick) {
             Text(
