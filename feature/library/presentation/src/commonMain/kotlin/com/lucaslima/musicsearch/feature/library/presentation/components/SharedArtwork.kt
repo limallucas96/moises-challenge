@@ -2,6 +2,8 @@ package com.lucaslima.musicsearch.feature.library.presentation.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -37,6 +39,10 @@ internal fun Modifier.sharedArtwork(
         sharedElement(
             sharedContentState = rememberSharedContentState(key = "artwork-$songId"),
             animatedVisibilityScope = transition.animatedScope,
+            boundsTransform = { _, _ -> tween(ARTWORK_TRANSITION_MILLIS, easing = FastOutSlowInEasing) },
         )
     }
 }
+
+/** Igual à troca de tela do `:shared` (300 ms): a capa chega junto com a tela. */
+private const val ARTWORK_TRANSITION_MILLIS = 300

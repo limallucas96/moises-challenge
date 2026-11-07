@@ -146,6 +146,29 @@ class SongsViewModelTest {
     }
 
     @Test
+    fun tocar_a_musica_que_ja_esta_no_player_nao_recomeca() = runViewModelTest {
+        val viewModel = viewModel()
+        player.state.value = PlayerState(song = song(2), isPlaying = true)
+
+        viewModel.onAction(SongsAction.OnSongClick(song(2), listOf(song(1), song(2))))
+
+        assertThat(player.lastQueue).isNull()
+    }
+
+    @Test
+    fun o_mini_player_mostra_a_musica_do_player_e_alterna_play_pause() = runViewModelTest {
+        val viewModel = viewModel()
+        assertThat(viewModel.state.value.nowPlaying).isNull()
+
+        player.state.value = PlayerState(song = song(4), isPlaying = false)
+        viewModel.onAction(SongsAction.OnMiniPlayerPlayPauseClick)
+
+        assertThat(viewModel.state.value.nowPlaying).isEqualTo(song(4))
+        assertThat(viewModel.state.value.isPlaying).isFalse()
+        assertThat(player.commands).containsExactly("togglePlayPause")
+    }
+
+    @Test
     fun mais_opcoes_abre_o_sheet_e_fechar_limpa() = runViewModelTest {
         val viewModel = viewModel()
 

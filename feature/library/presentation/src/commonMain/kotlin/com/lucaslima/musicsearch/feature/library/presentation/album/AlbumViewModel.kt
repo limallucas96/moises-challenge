@@ -40,7 +40,9 @@ class AlbumViewModel(
         when (action) {
             AlbumAction.OnRetryClick -> refresh()
 
+            // A música que já está no player não recomeça: o Root só abre o player nela.
             is AlbumAction.OnSongClick -> {
+                if (action.song.id == _state.value.playingSongId) return
                 val album = _state.value.album ?: return
                 val index = album.songs.indexOfFirst { it.id == action.song.id }
                 if (index >= 0) playerController.play(album.songs, index, queueTitle = album.title)
